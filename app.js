@@ -175,7 +175,7 @@ function getPerceivedVolume(sliderVal) {
 
 function initAudio() {
   if (!audio) {
-    audio = new AudioContext();
+    audio = new (window.AudioContext || window.webkitAudioContext)();
     master = audio.createDynamicsCompressor();
     master.threshold.value = -8;
     master.knee.value = 8;
@@ -196,12 +196,16 @@ function noise(seconds = .3) {
   return buffer;
 }
 
-function makeOutput(c, time) {
+// Nettoyage automatique des nœuds audio temporaires pour libérer la mémoire CPU
+function makeOutput(c, time, maxDuration = 2.0) {
   const dry = audio.createGain(),
         pan = audio.createStereoPanner();
+  
   dry.connect(pan);
   pan.connect(master);
   pan.pan.setValueAtTime(c.pan, time);
+
+  const cleanupNodes = [dry, pan];
 
   if (c.reverb > 0) {
     const convolver = audio.createConvolver(),
@@ -211,6 +215,7 @@ function makeOutput(c, time) {
     dry.connect(convolver);
     convolver.connect(gain);
     gain.connect(master);
+    cleanupNodes.push(convolver, gain);
   }
 
   if (c.delay > 0) {
@@ -225,13 +230,21 @@ function makeOutput(c, time) {
     feedback.connect(delay);
     delay.connect(gain);
     gain.connect(master);
+    cleanupNodes.push(delay, feedback, gain);
   }
+
+  // Auto-déconnexion pour éviter le surchargement du moteur
+  setTimeout(() => {
+    cleanupNodes.forEach(node => {
+      try { node.disconnect(); } catch (e) {}
+    });
+  }, (maxDuration + 0.5) * 1000);
 
   return dry;
 }
 
 function envelope(gain, peak, time, attack, release) {
-  gain.gain.setValueAtTime(0, time);
+  gain.gain.setValueAtTime(0.0001, time);
   gain.gain.linearRampToValueAtTime(Math.max(0.0001, peak), time + attack);
   const holdTime = Math.max(0.01, release - 0.04);
   gain.gain.setValueAtTime(peak, time + attack + holdTime);
@@ -241,15 +254,16 @@ function envelope(gain, peak, time, attack, release) {
 function playNote(inst, freq, time, duration, forcePlay = false) {
   const config = data[inst.id];
 
+  // Optimisation CPU : Interception immédiate si la piste n'a pas à émettre de son
   if (!forcePlay) {
     if (config.mute) return;
     const hasSolo = INSTRUMENTS.some(i => data[i.id].solo);
     if (hasSolo && !config.solo) return;
   }
 
-  const out = makeOutput(config, time),
+  const len = Math.max(.12, duration),
+        out = makeOutput(config, time, len + 1.5),
         v = getPerceivedVolume(config.volume),
-        len = Math.max(.12, duration),
         wx = config.waveX,
         wy = config.waveY;
 
@@ -592,12 +606,12 @@ function playCurrentInstrumentSound() {
 
 function scheduler() {
   if (!isPlaying) return;
-  while (nextStepTime < audio.currentTime + .25) {
+  while (nextStepTime < audio.currentTime + .20) {
     scheduleStep(currentStep, nextStepTime);
     currentStep = (currentStep + 1) % STEPS_COUNT;
     nextStepTime += (60 / bpm / 4) / 2;
   }
-  timerID = setTimeout(scheduler, 20);
+  timerID = setTimeout(scheduler, 25);
 }
 
 function scheduleStep(step, time) {
@@ -608,22 +622,32 @@ function scheduleStep(step, time) {
 
   const hasSolo = INSTRUMENTS.some(i => data[i.id].solo);
 
-  INSTRUMENTS.forEach(inst => {
-    if (data[inst.id].mute) return;
-    if (hasSolo && !data[inst.id].solo) return;
+  // Boucle optimisée
+  for (let i = 0; i < INSTRUMENTS.length; i++) {
+    const inst = INSTRUMENTS[i];
+    const trackData = data[inst.id];
+    
+    // Si Mute ou pas en Solo -> ignore sans traiter la grille (Gain de performances majeur)
+    if (trackData.mute || (hasSolo && !trackData.solo)) continue;
 
-    NOTES.forEach(note => {
-      const line = data[inst.id].grid[note.id];
-      if (line[step] !== 1) return;
+    for (let j = 0; j < NOTES.length; j++) {
+      const note = NOTES[j];
+      const line = trackData.grid[note.id];
+      if (!line || line[step] !== 1) continue;
+
       let blocks = 1;
-      while ((step + blocks) % STEPS_COUNT !== 0 && line[(step + blocks) % STEPS_COUNT] === 2) blocks++;
+      while ((step + blocks) % STEPS_COUNT !== 0 && line[(step + blocks) % STEPS_COUNT] === 2) {
+        blocks++;
+      }
       playNote(inst, note.freq, time, blocks * ((60 / bpm / 4) / 2), true);
-    });
-  });
+    }
+  }
 
-  document.querySelectorAll(`[data-step="${step}"]`).forEach(cell => {
-    cell.classList.add('playing');
-    setTimeout(() => cell.classList.remove('playing'), 90);
+  requestAnimationFrame(() => {
+    document.querySelectorAll(`[data-step="${step}"]`).forEach(cell => {
+      cell.classList.add('playing');
+      setTimeout(() => cell.classList.remove('playing'), 90);
+    });
   });
 }
 
@@ -853,7 +877,9 @@ function renderGrid() {
 
   const track = data[current],
         color = INSTRUMENTS.find(i => i.id === current).color;
-  $('gridContainer').innerHTML = '';
+  
+  const gridContainer = $('gridContainer');
+  gridContainer.innerHTML = '';
 
   let ghostTargetKeys = new Set();
   if (isDraggingGroup && dragStartCell && dragCurrentCell) {
@@ -871,6 +897,8 @@ function renderGrid() {
       }
     });
   }
+
+  const fragment = document.createDocumentFragment();
 
   NOTES.forEach((note, noteIdx) => {
     const row = document.createElement('div'),
@@ -895,7 +923,6 @@ function renderGrid() {
 
       cell.onmousedown = (e) => {
         saveStateToUndo();
-        const gridContainer = $('gridContainer');
         const rect = gridContainer.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
@@ -969,9 +996,10 @@ function renderGrid() {
     });
 
     row.append(key, steps);
-    $('gridContainer').append(row);
+    fragment.append(row);
   });
 
+  gridContainer.append(fragment);
   setupSelectionCanvas();
 
   if (viewport) {
@@ -1333,7 +1361,7 @@ function duplicateTrack(instId) {
     data[newId].waveY = data[instId].waveY;
   }
 
-  // Piste dupliquée mutée par défaut pour éviter la superposition de son
+  // Mute par défaut pour éviter de doubler la charge sonore et CPU
   data[newId].mute = true;
 
   reindexDuplicateKeys();
@@ -1377,6 +1405,7 @@ function renderMainRows() {
   if (!container) return;
   
   container.innerHTML = '';
+  const fragment = document.createDocumentFragment();
   
   INSTRUMENTS.forEach(inst => {
     const instData = data[inst.id] || { grid: {}, solo: false, mute: false };
@@ -1463,8 +1492,10 @@ function renderMainRows() {
       }
     }
 
-    container.append(row);
+    fragment.append(row);
   });
+
+  container.append(fragment);
 
   if (typeof setupHomeFooterHelpText === 'function') {
     setupHomeFooterHelpText();
