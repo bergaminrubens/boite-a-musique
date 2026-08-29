@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Séquenceur synesthésique — La Minute Artistique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <main class="sequencer-container">
+
+    <section class="art-canvas-zone" aria-label="Animation artistique">
+      <canvas id="artCanvas"></canvas>
+    </section>
+
+    <section class="controls-bar">
+      <button class="btn-main" id="playBtn">▶ Lecture</button>
+
+      <div class="bpm-control">
+        <input type="range" id="bpmSlider" min="60" max="200" value="110">
+        <span id="bpmLabel">110 BPM</span>
+      </div>
+
+      <button class="btn-main danger" id="clearBtn">Effacer</button>
+    </section>
+
+    <section class="instruments-list" id="instrumentsList" aria-label="Instruments et patterns"></section>
+
+  </main>
+
+  <section class="modal-overlay" id="editorModal" aria-hidden="true">
+    <section class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+      <header class="modal-header">
+        <h1 id="modalTitle">Configuration instrument</h1>
+        <button id="closeModalBtn" class="close-button" aria-label="Fermer">×</button>
+      </header>
+
+      <p class="help-text">
+        Cliquez pour une note. Maintenez <strong>Maj (Shift)</strong> et cliquez les pas suivants pour les lier en une note continue. <br> Maintenez <strong>Alt (Option)</strong> et cliquez pour sélectionner un ensemble de notes pour les déplacer ou les supprimer rapidement.
+      </p>
+
+      <div class="piano-roll-viewport" id="pianoRollViewport">
+        <div id="gridContainer"></div>
+      </div>
+
+      <section class="mixer-panel" aria-label="Mixage">
+
+        <div class="mixer-group">
+          <label for="mix-vol">Volume <span id="val-vol"></span></label>
+          <input id="mix-vol" type="range" min="0" max="100">
+        </div>
+
+        <div class="mixer-group">
+          <label for="mix-pan">Spatialisation <span id="val-pan"></span></label>
+          <input id="mix-pan" type="range" min="-100" max="100">
+        </div>
+
+        <div class="mixer-group">
+          <label for="mix-reverb">Réverbération <span id="val-reverb"></span></label>
+          <input id="mix-reverb" type="range" min="0" max="100">
+        </div>
+
+        <div class="mixer-group">
+          <label for="mix-delay">Delay <span id="val-delay"></span></label>
+          <input id="mix-delay" type="range" min="0" max="100">
+        </div>
+
+      </section>
+
+    </section>
+  </section>
+
+  <script src="js/app.js"></script>
+
+</body>
+</html>
