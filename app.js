@@ -157,7 +157,7 @@ let audio, master, impulse, recorderProcessor, audioBuffersLeft = [], audioBuffe
     bpm = 110,
     isDraggingWavePad = false;
 
-// VARIABLES DES BUS D'EFFETS GLOBAUX (Saves 90% CPU)
+// VARIABLES DES BUS D'EFFETS GLOBAUX
 let globalReverbNode, globalReverbGain;
 let globalDelayNode, globalDelayFeedback, globalDelayGain;
 
@@ -179,7 +179,6 @@ function getPerceivedVolume(sliderVal) {
 
 function initAudio() {
   if (!audio) {
-    // latencyHint: 'playback' offre un buffer plus stable contre les glitcheurs CPU
     audio = new (window.AudioContext || window.webkitAudioContext)({
       latencyHint: 'playback'
     });
@@ -194,7 +193,6 @@ function initAudio() {
 
     impulse = noise(2.2);
 
-    // --- 1. BUS DE RÉVERBÉRATION GLOBAL ---
     globalReverbNode = audio.createConvolver();
     globalReverbNode.buffer = impulse;
 
@@ -204,7 +202,6 @@ function initAudio() {
     globalReverbNode.connect(globalReverbGain);
     globalReverbGain.connect(master);
 
-    // --- 2. BUS DE DELAY GLOBAL ---
     globalDelayNode = audio.createDelay(.8);
     globalDelayFeedback = audio.createGain();
     globalDelayGain = audio.createGain();
@@ -213,7 +210,6 @@ function initAudio() {
     globalDelayFeedback.gain.setValueAtTime(.35, audio.currentTime);
     globalDelayGain.gain.setValueAtTime(1.0, audio.currentTime);
 
-    // Boucle de réinjection du delay
     globalDelayNode.connect(globalDelayFeedback);
     globalDelayFeedback.connect(globalDelayNode);
     globalDelayNode.connect(globalDelayGain);
@@ -229,7 +225,6 @@ function noise(seconds = .3) {
   return buffer;
 }
 
-// Fonction de routage ultra-légère vers les bus partagés
 function makeOutput(c, time, maxDuration = 2.0) {
   const dry = audio.createGain(),
         pan = audio.createStereoPanner();
@@ -240,7 +235,6 @@ function makeOutput(c, time, maxDuration = 2.0) {
 
   const cleanupNodes = [dry, pan];
 
-  // --- ENVOI VERS LE BUS REVERB UNIQUE ---
   if (c.reverb > 0) {
     const revSend = audio.createGain();
     revSend.gain.setValueAtTime(c.reverb * 0.4, time);
@@ -249,7 +243,6 @@ function makeOutput(c, time, maxDuration = 2.0) {
     cleanupNodes.push(revSend);
   }
 
-  // --- ENVOI VERS LE BUS DELAY UNIQUE ---
   if (c.delay > 0) {
     const delaySend = audio.createGain();
     delaySend.gain.setValueAtTime(c.delay * 0.4, time);
@@ -258,7 +251,6 @@ function makeOutput(c, time, maxDuration = 2.0) {
     cleanupNodes.push(delaySend);
   }
 
-  // Déconnexion des sorties de piste individuelles pour libérer le thread
   setTimeout(() => {
     cleanupNodes.forEach(node => {
       try { node.disconnect(); } catch (e) {}
@@ -319,6 +311,12 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc.start(time);
     osc.stop(time + dur + 0.01);
+
+    osc.onended = () => {
+      osc.disconnect();
+      drive.disconnect();
+      gain.disconnect();
+    };
     return;
   }
 
@@ -330,9 +328,15 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     body.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 0.5), time + 0.06);
     
     envelope(bodyGain, v * 1.1, time, 0.001, 0.09);
-    body.connect(out);
+    body.connect(bodyGain);
+    bodyGain.connect(out);
     body.start(time);
     body.stop(time + 0.1);
+
+    body.onended = () => {
+      body.disconnect();
+      bodyGain.disconnect();
+    };
 
     const noiseSrc = audio.createBufferSource();
     const bpFilter = audio.createBiquadFilter();
@@ -344,9 +348,16 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     envelope(noiseGain, v * 0.9, time, 0.002, 0.14 + wy * 0.1);
     noiseSrc.connect(bpFilter);
-    bpFilter.connect(out);
+    bpFilter.connect(noiseGain);
+    noiseGain.connect(out);
     noiseSrc.start(time);
     noiseSrc.stop(time + 0.3);
+
+    noiseSrc.onended = () => {
+      noiseSrc.disconnect();
+      bpFilter.disconnect();
+      noiseGain.disconnect();
+    };
     return;
   }
 
@@ -358,6 +369,8 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     hp.type = 'highpass';
     hp.frequency.setValueAtTime(Math.min(14000, 4000 * ratio + wx * 2500), time);
 
+    let endedCount = 0;
+
     freqs.forEach(f => {
       const osc = audio.createOscillator();
       osc.type = 'square';
@@ -365,6 +378,15 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
       osc.connect(hp);
       osc.start(time);
       osc.stop(time + 0.12);
+
+      osc.onended = () => {
+        osc.disconnect();
+        endedCount++;
+        if (endedCount === freqs.length) {
+          hp.disconnect();
+          hatGain.disconnect();
+        }
+      };
     });
 
     envelope(hatGain, v * 0.45, time, 0.001, 0.04 + wy * 0.1);
@@ -398,6 +420,19 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc1.start(time); osc2.start(time);
     osc1.stop(time + len + 0.05); osc2.stop(time + len + 0.05);
+
+    let endedCount = 0;
+    const cleanSub = () => {
+      endedCount++;
+      if (endedCount === 2) {
+        osc1.disconnect();
+        osc2.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }
+    };
+    osc1.onended = cleanSub;
+    osc2.onended = cleanSub;
     return;
   }
 
@@ -421,6 +456,12 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc.start(time);
     osc.stop(time + 0.15);
+
+    osc.onended = () => {
+      osc.disconnect();
+      filter.disconnect();
+      gain.disconnect();
+    };
     return;
   }
 
@@ -443,7 +484,8 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(800 + wx * 4000, time);
 
-    modulator.connect(carrier.frequency);
+    modulator.connect(modGain);
+    modGain.connect(carrier.frequency);
     envelope(gain, v * 0.85, time, 0.001, len * 0.5 + wx * 0.1);
     
     carrier.connect(filter);
@@ -452,6 +494,20 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     carrier.start(time); modulator.start(time);
     carrier.stop(time + len + 0.05); modulator.stop(time + len + 0.05);
+
+    let endedCount = 0;
+    const cleanPluck = () => {
+      endedCount++;
+      if (endedCount === 2) {
+        carrier.disconnect();
+        modulator.disconnect();
+        modGain.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }
+    };
+    carrier.onended = cleanPluck;
+    modulator.onended = cleanPluck;
     return;
   }
 
@@ -483,6 +539,21 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc1.start(time); osc2.start(time); osc3.start(time);
     osc1.stop(time + len + 0.05); osc2.stop(time + len + 0.05); osc3.stop(time + len + 0.05);
+
+    let endedCount = 0;
+    const cleanRhodes = () => {
+      endedCount++;
+      if (endedCount === 3) {
+        osc1.disconnect();
+        osc2.disconnect();
+        osc3.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }
+    };
+    osc1.onended = cleanRhodes;
+    osc2.onended = cleanRhodes;
+    osc3.onended = cleanRhodes;
     return;
   }
 
@@ -510,6 +581,19 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc1.start(time); osc2.start(time);
     osc1.stop(time + len + 0.05); osc2.stop(time + len + 0.05);
+
+    let endedCount = 0;
+    const cleanBrass = () => {
+      endedCount++;
+      if (endedCount === 2) {
+        osc1.disconnect();
+        osc2.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }
+    };
+    osc1.onended = cleanBrass;
+    osc2.onended = cleanBrass;
     return;
   }
 
@@ -528,13 +612,27 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     modGain.gain.setValueAtTime(freq * (1.5 + wx * 5), time);
     modGain.gain.exponentialRampToValueAtTime(0.01, time + 0.25);
 
-    modulator.connect(carrier.frequency);
+    modulator.connect(modGain);
+    modGain.connect(carrier.frequency);
     envelope(gain, v * 0.7, time, 0.001, len * 1.3);
     carrier.connect(gain);
     gain.connect(out);
 
     carrier.start(time); modulator.start(time);
     carrier.stop(time + len + 0.1); modulator.stop(time + len + 0.1);
+
+    let endedCount = 0;
+    const cleanBell = () => {
+      endedCount++;
+      if (endedCount === 2) {
+        carrier.disconnect();
+        modulator.disconnect();
+        modGain.disconnect();
+        gain.disconnect();
+      }
+    };
+    carrier.onended = cleanBell;
+    modulator.onended = cleanBell;
     return;
   }
 
@@ -557,6 +655,12 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc.start(time);
     osc.stop(time + len + 0.05);
+
+    osc.onended = () => {
+      osc.disconnect();
+      filter.disconnect();
+      gain.disconnect();
+    };
     return;
   }
 
@@ -583,6 +687,19 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     osc1.start(time); osc2.start(time);
     osc1.stop(time + len + 0.2); osc2.stop(time + len + 0.2);
+
+    let endedCount = 0;
+    const cleanPad = () => {
+      endedCount++;
+      if (endedCount === 2) {
+        osc1.disconnect();
+        osc2.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      }
+    };
+    osc1.onended = cleanPad;
+    osc2.onended = cleanPad;
     return;
   }
 }
@@ -630,7 +747,6 @@ function playCurrentInstrumentSound() {
 
 function scheduler() {
   if (!isPlaying) return;
-  // Fenêtre de calcul réduite à 0.1s pour lisser l'exécution CPU
   while (nextStepTime < audio.currentTime + .10) {
     scheduleStep(currentStep, nextStepTime);
     currentStep = (currentStep + 1) % STEPS_COUNT;
