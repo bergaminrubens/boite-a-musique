@@ -140,6 +140,7 @@ canvas {
   box-shadow: 0 1px 2px rgba(0,0,0,.1);
 }
 
+/* Boutons d'action des pistes (Mute, Solo, etc.) */
 .btn-track {
   width: 36px;
   height: 36px;
@@ -149,7 +150,7 @@ canvas {
   color: var(--text-muted);
   font-weight: bold;
   cursor: pointer;
-  transition: .15s;
+  transition: all .15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,18 +160,40 @@ canvas {
   background: #edf2f7;
 }
 
-.btn-solo.active {
+.btn-solo.active,
+.btn-mute.active {
   background: #ed8936;
   color: #fff;
   border-color: #dd6b20;
   box-shadow: 0 2px 8px rgba(237, 137, 54, 0.4);
 }
 
-.btn-mute.active {
-  background: #ed8936;
-  color: #fff;
-  border-color: #dd6b20;
-  box-shadow: 0 2px 8px rgba(237, 137, 54, 0.4);
+/* Bouton de duplication "+" */
+.btn-duplicate {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #4a5568;
+}
+
+.btn-duplicate:hover {
+  background: #48bb78;
+  color: #ffffff;
+  border-color: #38a169;
+}
+
+/* Bouton de suppression "-" */
+.btn-remove {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #e53e3e;
+  background: #fff5f5;
+  border-color: #fed7d7;
+}
+
+.btn-remove:hover {
+  background: #e53e3e;
+  color: #ffffff;
+  border-color: #c53030;
 }
 
 .instrument-name {
@@ -228,8 +251,8 @@ canvas {
 
 .modal-content {
   width: min(1100px, 80vw); 
-  max-height: 90vh;       
-  overflow-y: auto;       
+  max-height: 90vh;        
+  overflow-y: auto;        
   background: white;
   border-radius: var(--radius);
   box-shadow: 0 20px 50px #0003;
@@ -319,6 +342,22 @@ canvas {
   outline-offset: -2px;
 }
 
+/* Surbrillance et prévisualisation des notes */
+.step-cell.selected-group {
+  outline: 2px solid #3182ce !important;
+  outline-offset: -2px;
+  filter: brightness(1.25);
+  box-shadow: 0 0 8px rgba(49, 130, 206, 0.6);
+}
+
+.step-cell.ghost-preview {
+  background-color: rgba(49, 130, 206, 0.45) !important;
+  outline: 2px dashed #2b6cb0 !important;
+  outline-offset: -2px;
+  box-shadow: 0 0 10px rgba(49, 130, 206, 0.8);
+  z-index: 5;
+}
+
 .mixer-panel {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -348,22 +387,6 @@ canvas {
   accent-color: var(--text-dark);
 }
 
-@media (max-width: 640px) {
-  .controls-bar strong {
-    display: none;
-  }
-
-  .mixer-panel {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .instrument-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    padding: 10px;
-  }
-}
-
 .bpm-control {
   display: flex;
   align-items: center;
@@ -382,88 +405,18 @@ canvas {
   white-space: nowrap;
 }
 
-.step-cell.selected-group {
-  outline: 2px solid #3182ce !important;
-  outline-offset: -2px;
-  filter: brightness(1.25);
-  box-shadow: 0 0 8px rgba(49, 130, 206, 0.6);
-}
+@media (max-width: 640px) {
+  .controls-bar strong {
+    display: none;
+  }
 
-/* Bouton de duplication "+" */
-.btn-duplicate {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #4a5568;
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #cbd5e0;
-  background: #ffffff;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
+  .mixer-panel {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-.btn-duplicate:hover {
-  background: #48bb78;
-  color: #ffffff;
-  border-color: #38a169;
-}
-
-/* Surbrillance et prévisualisation fantôme des notes lors du déplacement */
-.step-cell.ghost-preview {
-  background-color: rgba(49, 130, 206, 0.45) !important;
-  outline: 2px dashed #2b6cb0 !important;
-  outline-offset: -2px;
-  box-shadow: 0 0 10px rgba(49, 130, 206, 0.8);
-  z-index: 5;
-}
-
-/* Formatage des cases sélectionnées */
-.step-cell.selected-group {
-  outline: 2px solid #3182ce !important;
-  outline-offset: -2px;
-  filter: brightness(1.25);
-  box-shadow: 0 0 8px rgba(49, 130, 206, 0.6);
-}
-
-/* Bouton de suppression "-" */
-.btn-remove {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #4a5568;
-  border-radius: 6px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #cbd5e0;
-  background: #ffffff;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-remove {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #e53e3e;
-  border-radius: 10px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line);
-  background: #fff5f5;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-remove:hover {
-  background: #e53e3e;
-  color: #ffffff;
-  border-color: #c53030;
+  .instrument-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
 }
