@@ -1760,12 +1760,16 @@ function animate() {
 
   for (let j = 0; j < 15; j++) {
     draw.beginPath();
-    for (let x = 0; x < box.width; x += 9) {
+    
+    // On va un tout petit peu plus loin que le bord droit (+ 10px) pour éviter qu'il manque un bout
+    for (let x = 0; x <= box.width + 10; x += 9) {
+      const targetX = Math.min(x, box.width); // On plaque le dernier point exactement sur le bord si besoin
       const y = box.height / 2
         + (j - 7) * 6
-        + Math.sin(x * .008 + t + j * .2) * Math.cos(x * .017 - t * .7 + j * .1) * 30;
-      if (x) draw.lineTo(x, y);
-      else draw.moveTo(x, y);
+        + Math.sin(targetX * .008 + t + j * .2) * Math.cos(targetX * .017 - t * .7 + j * .1) * 30;
+
+      if (x === 0) draw.moveTo(targetX, y);
+      else draw.lineTo(targetX, y);
     }
     draw.stroke();
   }
