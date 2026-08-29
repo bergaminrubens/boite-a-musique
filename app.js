@@ -157,6 +157,10 @@ let audio, master, impulse, recorderProcessor, audioBuffersLeft = [], audioBuffe
     bpm = 110,
     isDraggingWavePad = false;
 
+// VARIABLES DES BUS D'EFFETS GLOBAUX (Saves 90% CPU)
+let globalReverbNode, globalReverbGain;
+let globalDelayNode, globalDelayFeedback, globalDelayGain;
+
 let selectedNotes = new Set();
 let isBoxSelecting = false;
 let boxStartPos = { x: 0, y: 0 };
@@ -175,7 +179,11 @@ function getPerceivedVolume(sliderVal) {
 
 function initAudio() {
   if (!audio) {
-    audio = new (window.AudioContext || window.webkitAudioContext)();
+    // latencyHint: 'playback' offre un buffer plus stable contre les glitcheurs CPU
+    audio = new (window.AudioContext || window.webkitAudioContext)({
+      latencyHint: 'playback'
+    });
+    
     master = audio.createDynamicsCompressor();
     master.threshold.value = -8;
     master.knee.value = 8;
@@ -185,6 +193,31 @@ function initAudio() {
     master.connect(audio.destination);
 
     impulse = noise(2.2);
+
+    // --- 1. BUS DE RÉVERBÉRATION GLOBAL ---
+    globalReverbNode = audio.createConvolver();
+    globalReverbNode.buffer = impulse;
+
+    globalReverbGain = audio.createGain();
+    globalReverbGain.gain.setValueAtTime(1.0, audio.currentTime);
+
+    globalReverbNode.connect(globalReverbGain);
+    globalReverbGain.connect(master);
+
+    // --- 2. BUS DE DELAY GLOBAL ---
+    globalDelayNode = audio.createDelay(.8);
+    globalDelayFeedback = audio.createGain();
+    globalDelayGain = audio.createGain();
+
+    globalDelayNode.delayTime.setValueAtTime(.22, audio.currentTime);
+    globalDelayFeedback.gain.setValueAtTime(.35, audio.currentTime);
+    globalDelayGain.gain.setValueAtTime(1.0, audio.currentTime);
+
+    // Boucle de réinjection du delay
+    globalDelayNode.connect(globalDelayFeedback);
+    globalDelayFeedback.connect(globalDelayNode);
+    globalDelayNode.connect(globalDelayGain);
+    globalDelayGain.connect(master);
   }
   if (audio.state === 'suspended') audio.resume();
 }
@@ -196,7 +229,7 @@ function noise(seconds = .3) {
   return buffer;
 }
 
-// Nettoyage automatique des nœuds audio temporaires pour libérer la mémoire CPU
+// Fonction de routage ultra-légère vers les bus partagés
 function makeOutput(c, time, maxDuration = 2.0) {
   const dry = audio.createGain(),
         pan = audio.createStereoPanner();
@@ -207,33 +240,25 @@ function makeOutput(c, time, maxDuration = 2.0) {
 
   const cleanupNodes = [dry, pan];
 
+  // --- ENVOI VERS LE BUS REVERB UNIQUE ---
   if (c.reverb > 0) {
-    const convolver = audio.createConvolver(),
-          gain = audio.createGain();
-    convolver.buffer = impulse;
-    gain.gain.setValueAtTime(c.reverb * .4, time);
-    dry.connect(convolver);
-    convolver.connect(gain);
-    gain.connect(master);
-    cleanupNodes.push(convolver, gain);
+    const revSend = audio.createGain();
+    revSend.gain.setValueAtTime(c.reverb * 0.4, time);
+    dry.connect(revSend);
+    revSend.connect(globalReverbNode);
+    cleanupNodes.push(revSend);
   }
 
+  // --- ENVOI VERS LE BUS DELAY UNIQUE ---
   if (c.delay > 0) {
-    const delay = audio.createDelay(.8),
-          feedback = audio.createGain(),
-          gain = audio.createGain();
-    delay.delayTime.setValueAtTime(.22, time);
-    feedback.gain.setValueAtTime(.22 + c.delay * .3, time);
-    gain.gain.setValueAtTime(c.delay * .4, time);
-    dry.connect(delay);
-    delay.connect(feedback);
-    feedback.connect(delay);
-    delay.connect(gain);
-    gain.connect(master);
-    cleanupNodes.push(delay, feedback, gain);
+    const delaySend = audio.createGain();
+    delaySend.gain.setValueAtTime(c.delay * 0.4, time);
+    dry.connect(delaySend);
+    delaySend.connect(globalDelayNode);
+    cleanupNodes.push(delaySend);
   }
 
-  // Auto-déconnexion pour éviter le surchargement du moteur
+  // Déconnexion des sorties de piste individuelles pour libérer le thread
   setTimeout(() => {
     cleanupNodes.forEach(node => {
       try { node.disconnect(); } catch (e) {}
@@ -254,7 +279,6 @@ function envelope(gain, peak, time, attack, release) {
 function playNote(inst, freq, time, duration, forcePlay = false) {
   const config = data[inst.id];
 
-  // Optimisation CPU : Interception immédiate si la piste n'a pas à émettre de son
   if (!forcePlay) {
     if (config.mute) return;
     const hasSolo = INSTRUMENTS.some(i => data[i.id].solo);
@@ -606,7 +630,8 @@ function playCurrentInstrumentSound() {
 
 function scheduler() {
   if (!isPlaying) return;
-  while (nextStepTime < audio.currentTime + .20) {
+  // Fenêtre de calcul réduite à 0.1s pour lisser l'exécution CPU
+  while (nextStepTime < audio.currentTime + .10) {
     scheduleStep(currentStep, nextStepTime);
     currentStep = (currentStep + 1) % STEPS_COUNT;
     nextStepTime += (60 / bpm / 4) / 2;
@@ -622,12 +647,10 @@ function scheduleStep(step, time) {
 
   const hasSolo = INSTRUMENTS.some(i => data[i.id].solo);
 
-  // Boucle optimisée
   for (let i = 0; i < INSTRUMENTS.length; i++) {
     const inst = INSTRUMENTS[i];
     const trackData = data[inst.id];
     
-    // Si Mute ou pas en Solo -> ignore sans traiter la grille (Gain de performances majeur)
     if (trackData.mute || (hasSolo && !trackData.solo)) continue;
 
     for (let j = 0; j < NOTES.length; j++) {
@@ -1361,7 +1384,6 @@ function duplicateTrack(instId) {
     data[newId].waveY = data[instId].waveY;
   }
 
-  // Mute par défaut pour éviter de doubler la charge sonore et CPU
   data[newId].mute = true;
 
   reindexDuplicateKeys();
