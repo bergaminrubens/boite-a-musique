@@ -1103,8 +1103,16 @@ window.addEventListener('keydown', event => {
   if (event.key === 'Shift') shiftDown = true;
   if (event.key === 'Alt') altDown = true;
 
-  const isCmdOrCtrl = event.metaKey || event.ctrlKey;
   const isModalOpen = $('editorModal').classList.contains('open');
+
+  // Touche Échap pour fermer la fenêtre instrument
+  if (event.key === 'Escape' && isModalOpen) {
+    event.preventDefault();
+    closeEditor(); // Ou $('closeModalBtn').click() selon le nom de ta fonction de fermeture
+    return;
+  }
+
+  const isCmdOrCtrl = event.metaKey || event.ctrlKey;
 
   if (isModalOpen) {
     if (isCmdOrCtrl && (event.key === 'z' || event.key === 'Z')) {
