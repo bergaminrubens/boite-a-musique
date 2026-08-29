@@ -1309,6 +1309,7 @@ function drawWavePad() {
   ctx.shadowBlur = 0;
 }
 
+// Remplace la fonction duplicateTrack existante par celle-ci
 function duplicateTrack(instId) {
   if (duplicateCount >= 6) {
     alert('Limite atteinte : Vous ne pouvez pas créer plus de 6 pistes dupliquées.');
@@ -1329,7 +1330,8 @@ function duplicateTrack(instId) {
     type: sourceInst.type,
     voice: sourceInst.voice,
     color: sourceInst.color,
-    key: assignedKey
+    key: assignedKey,
+    isDuplicate: true // Flag pour identifier les pistes supprimables
   };
 
   INSTRUMENTS.splice(sourceIndex + 1, 0, newInst);
@@ -1343,6 +1345,107 @@ function duplicateTrack(instId) {
   data[newId].waveY = data[instId].waveY;
 
   renderMainRows();
+}
+
+// Ajoute cette nouvelle fonction pour supprimer une piste
+function removeTrack(instId) {
+  const index = INSTRUMENTS.findIndex(i => i.id === instId);
+  if (index === -1) return;
+
+  // Suppression des données de la piste
+  INSTRUMENTS.splice(index, 1);
+  delete data[instId];
+
+  // Si l'éditeur ouvert correspond à la piste supprimée, on le ferme
+  if (current === instId && $('editorModal').classList.contains('open')) {
+    $('closeModalBtn').click();
+  }
+
+  // Réassignation des raccourcis claviers (W, X, C...) aux pistes dupliquées restantes
+  duplicateCount = 0;
+  INSTRUMENTS.forEach(inst => {
+    if (inst.isDuplicate) {
+      inst.key = DUPLICATE_KEYS[duplicateCount];
+      duplicateCount++;
+    }
+  });
+
+  renderMainRows();
+}
+
+// Remplace la fonction renderMainRows existante par celle-ci
+function renderMainRows() {
+  $('instrumentsList').innerHTML = '';
+  INSTRUMENTS.forEach(inst => {
+    const states = Array.from({ length: STEPS_COUNT }, (_, step) =>
+      Math.max(...NOTES.map(note => data[inst.id].grid[note.id][step]))
+    );
+
+    const isSolo = data[inst.id].solo;
+    const isMute = data[inst.id].mute;
+
+    const row = document.createElement('div');
+    row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
+
+    // Condition pour afficher le bouton "-" uniquement sur les pistes dupliquées
+    const actionBtnHTML = inst.isDuplicate
+      ? `<button class="btn-track btn-remove" title="Supprimer cette piste">-</button>`
+      : `<button class="btn-track btn-duplicate" title="Dupliquer sous cette piste">+</button>`;
+
+    row.innerHTML = `
+      <button class="instrument-row" style="--track: ${inst.color}">
+        <span class="inst-info">
+          <span class="key-badge" title="Touche Mute/Unmute">${inst.key}</span>
+          <span>
+            <span class="instrument-name">${inst.name}</span>
+            <span class="instrument-type">${inst.type}</span>
+          </span>
+        </span>
+        <span class="pattern">
+          ${states.map(value => `<i class="${value ? 'active' : ''} ${value === 2 ? 'linked' : ''}"></i>`).join('')}
+        </span>
+      </button>
+      <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key}]">M</button>
+      <button class="btn-track btn-solo ${isSolo ? 'active' : ''}" title="Solo (Clic: Solo exclusif / Alt+Clic: Solo multiple)">S</button>
+      ${actionBtnHTML}
+    `;
+
+    row.querySelector('.instrument-row').onclick = (e) => {
+      openEditor(inst.id);
+      if (e.target.blur) e.target.blur();
+    };
+    row.querySelector('.btn-mute').onclick = (e) => {
+      e.stopPropagation();
+      data[inst.id].mute = !data[inst.id].mute;
+      renderMainRows();
+      if (e.target.blur) e.target.blur();
+    };
+    row.querySelector('.btn-solo').onclick = (e) => {
+      e.stopPropagation();
+      handleSoloClick(inst.id, e.altKey || altDown);
+      renderMainRows();
+      if ($('editorModal').classList.contains('open')) updateModalHeaderControls();
+      if (e.target.blur) e.target.blur();
+    };
+
+    if (inst.isDuplicate) {
+      row.querySelector('.btn-remove').onclick = (e) => {
+        e.stopPropagation();
+        removeTrack(inst.id);
+        if (e.target.blur) e.target.blur();
+      };
+    } else {
+      row.querySelector('.btn-duplicate').onclick = (e) => {
+        e.stopPropagation();
+        duplicateTrack(inst.id);
+        if (e.target.blur) e.target.blur();
+      };
+    }
+
+    $('instrumentsList').append(row);
+  });
+
+  setupHomeFooterHelpText();
 }
 
 function setupHomeFooterHelpText() {
