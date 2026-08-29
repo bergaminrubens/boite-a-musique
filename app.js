@@ -1323,25 +1323,32 @@ function duplicateTrack(instId) {
   const sourceInst = INSTRUMENTS[sourceIndex];
   const newId = Math.max(...INSTRUMENTS.map(i => i.id)) + 1;
 
+  // Création de la copie avec le drapeau `isDuplicate: true` bien ancré
   const newInst = {
+    ...sourceInst,
     id: newId,
     name: `${sourceInst.name} (Copie)`,
-    type: sourceInst.type,
-    voice: sourceInst.voice,
-    color: sourceInst.color,
     key: '',
     isDuplicate: true
   };
 
   INSTRUMENTS.splice(sourceIndex + 1, 0, newInst);
 
-  data[newId] = initInstrumentData(newId);
-  data[newId].volume = data[instId].volume;
-  data[newId].pan = data[instId].pan;
-  data[newId].reverb = data[instId].reverb;
-  data[newId].delay = data[instId].delay;
-  data[newId].waveX = data[instId].waveX;
-  data[newId].waveY = data[instId].waveY;
+  // Copie des données audio
+  if (typeof initInstrumentData === 'function') {
+    data[newId] = initInstrumentData(newId);
+  } else {
+    data[newId] = JSON.parse(JSON.stringify(data[instId]));
+  }
+
+  if (data[instId]) {
+    data[newId].volume = data[instId].volume;
+    data[newId].pan = data[instId].pan;
+    data[newId].reverb = data[instId].reverb;
+    data[newId].delay = data[instId].delay;
+    data[newId].waveX = data[instId].waveX;
+    data[newId].waveY = data[instId].waveY;
+  }
 
   reindexDuplicateKeys();
   renderMainRows();
@@ -1354,8 +1361,12 @@ function removeTrack(instId) {
   INSTRUMENTS.splice(index, 1);
   delete data[instId];
 
-  if (current === instId && $('editorModal').classList.contains('open')) {
-    $('closeModalBtn').click();
+  if (typeof current !== 'undefined' && current === instId) {
+    const modal = document.getElementById('editorModal');
+    if (modal && modal.classList.contains('open')) {
+      const closeBtn = document.getElementById('closeModalBtn');
+      if (closeBtn) closeBtn.click();
+    }
   }
 
   reindexDuplicateKeys();
@@ -1366,85 +1377,115 @@ function reindexDuplicateKeys() {
   let dupIdx = 0;
   INSTRUMENTS.forEach(inst => {
     if (inst.isDuplicate) {
-      inst.key = DUPLICATE_KEYS[dupIdx] || '';
+      inst.key = (typeof DUPLICATE_KEYS !== 'undefined' && DUPLICATE_KEYS[dupIdx]) ? DUPLICATE_KEYS[dupIdx] : '';
       dupIdx++;
     }
   });
-  duplicateCount = dupIdx;
+  if (typeof duplicateCount !== 'undefined') {
+    duplicateCount = dupIdx;
+  }
 }
 
 function renderMainRows() {
-  $('instrumentsList').innerHTML = '';
+  const container = document.getElementById('instrumentsList');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
   INSTRUMENTS.forEach(inst => {
-    const states = Array.from({ length: STEPS_COUNT }, (_, step) =>
-      Math.max(...NOTES.map(note => data[inst.id].grid[note.id][step]))
-    );
+    const instData = data[inst.id] || { grid: {}, solo: false, mute: false };
+    const isSolo = !!instData.solo;
+    const isMute = !!instData.mute;
 
-    const isSolo = data[inst.id].solo;
-    const isMute = data[inst.id].mute;
+    const states = Array.from({ length: typeof STEPS_COUNT !== 'undefined' ? STEPS_COUNT : 32 }, (_, step) => {
+      if (!instData.grid || typeof NOTES === 'undefined') return 0;
+      return Math.max(...NOTES.map(note => (instData.grid[note.id] ? instData.grid[note.id][step] : 0)));
+    });
 
     const row = document.createElement('div');
     row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
 
-    // Remplace strictement le "+" par le "-" si la piste est une copie
+    // Condition stricte : Si isDuplicate est true -> bouton `-`, sinon -> bouton `+`
     const actionBtnHTML = inst.isDuplicate
       ? `<button class="btn-track btn-remove" title="Supprimer cette piste">-</button>`
       : `<button class="btn-track btn-duplicate" title="Dupliquer cette piste">+</button>`;
 
     row.innerHTML = `
-      <button class="instrument-row" style="--track: ${inst.color}">
+      <button class="instrument-row" style="--track: ${inst.color || '#667'}">
         <span class="inst-info">
-          <span class="key-badge" title="Touche Mute/Unmute">${inst.key}</span>
+          <span class="key-badge" title="Touche Mute/Unmute">${inst.key || ''}</span>
           <span>
             <span class="instrument-name">${inst.name}</span>
-            <span class="instrument-type">${inst.type}</span>
+            <span class="instrument-type">${inst.type || ''}</span>
           </span>
         </span>
         <span class="pattern">
           ${states.map(value => `<i class="${value ? 'active' : ''} ${value === 2 ? 'linked' : ''}"></i>`).join('')}
         </span>
       </button>
-      <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key}]">M</button>
-      <button class="btn-track btn-solo ${isSolo ? 'active' : ''}" title="Solo (Clic: Solo exclusif / Alt+Clic: Solo multiple)">S</button>
+      <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key || ''}]">M</button>
+      <button class="btn-track btn-solo ${isSolo ? 'active' : ''}" title="Solo">S</button>
       ${actionBtnHTML}
     `;
 
-    row.querySelector('.instrument-row').onclick = (e) => {
-      openEditor(inst.id);
-      if (e.target.blur) e.target.blur();
-    };
-    row.querySelector('.btn-mute').onclick = (e) => {
-      e.stopPropagation();
-      data[inst.id].mute = !data[inst.id].mute;
-      renderMainRows();
-      if (e.target.blur) e.target.blur();
-    };
-    row.querySelector('.btn-solo').onclick = (e) => {
-      e.stopPropagation();
-      handleSoloClick(inst.id, e.altKey || altDown);
-      renderMainRows();
-      if ($('editorModal').classList.contains('open')) updateModalHeaderControls();
-      if (e.target.blur) e.target.blur();
-    };
-
-    if (inst.isDuplicate) {
-      row.querySelector('.btn-remove').onclick = (e) => {
-        e.stopPropagation();
-        removeTrack(inst.id);
-        if (e.target.blur) e.target.blur();
-      };
-    } else {
-      row.querySelector('.btn-duplicate').onclick = (e) => {
-        e.stopPropagation();
-        duplicateTrack(inst.id);
+    // Événements
+    const mainBtn = row.querySelector('.instrument-row');
+    if (mainBtn) {
+      mainBtn.onclick = (e) => {
+        if (typeof openEditor === 'function') openEditor(inst.id);
         if (e.target.blur) e.target.blur();
       };
     }
 
-    $('instrumentsList').append(row);
+    const muteBtn = row.querySelector('.btn-mute');
+    if (muteBtn) {
+      muteBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (data[inst.id]) data[inst.id].mute = !data[inst.id].mute;
+        renderMainRows();
+        if (e.target.blur) e.target.blur();
+      };
+    }
+
+    const soloBtn = row.querySelector('.btn-solo');
+    if (soloBtn) {
+      soloBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (typeof handleSoloClick === 'function') {
+          handleSoloClick(inst.id, e.altKey || (typeof altDown !== 'undefined' && altDown));
+        }
+        renderMainRows();
+        if (e.target.blur) e.target.blur();
+      };
+    }
+
+    // Association de l'action selon le type de piste
+    if (inst.isDuplicate) {
+      const removeBtn = row.querySelector('.btn-remove');
+      if (removeBtn) {
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeTrack(inst.id);
+          if (e.target.blur) e.target.blur();
+        };
+      }
+    } else {
+      const dupBtn = row.querySelector('.btn-duplicate');
+      if (dupBtn) {
+        dupBtn.onclick = (e) => {
+          e.stopPropagation();
+          duplicateTrack(inst.id);
+          if (e.target.blur) e.target.blur();
+        };
+      }
+    }
+
+    container.append(row);
   });
 
-  setupHomeFooterHelpText();
+  if (typeof setupHomeFooterHelpText === 'function') {
+    setupHomeFooterHelpText();
+  }
 }
 
 function setupHomeFooterHelpText() {
