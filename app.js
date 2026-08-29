@@ -1386,7 +1386,7 @@ function renderMainRows() {
     const row = document.createElement('div');
     row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
 
-    // Affiche "-" pour les pistes dupliquées, "+" pour les originales
+    // Remplace strictement le "+" par le "-" si la piste est une copie
     const actionBtnHTML = inst.isDuplicate
       ? `<button class="btn-track btn-remove" title="Supprimer cette piste">-</button>`
       : `<button class="btn-track btn-duplicate" title="Dupliquer cette piste">+</button>`;
