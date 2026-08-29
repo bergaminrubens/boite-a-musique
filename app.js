@@ -1373,7 +1373,72 @@ function removeTrack(instId) {
   renderMainRows();
 }
 
-// Remplace la fonction renderMainRows existante par celle-ci
+function duplicateTrack(instId) {
+  // On compte les pistes dupliquées réellement présentes dans le tableau
+  const currentDuplicatesCount = INSTRUMENTS.filter(i => i.isDuplicate).length;
+
+  if (currentDuplicatesCount >= 6) {
+    alert('Limite atteinte : Vous ne pouvez pas créer plus de 6 pistes dupliquées.');
+    return;
+  }
+
+  const sourceIndex = INSTRUMENTS.findIndex(i => i.id === instId);
+  if (sourceIndex === -1) return;
+
+  const sourceInst = INSTRUMENTS[sourceIndex];
+  const newId = Math.max(...INSTRUMENTS.map(i => i.id)) + 1;
+
+  const newInst = {
+    id: newId,
+    name: `${sourceInst.name} (Copie)`,
+    type: sourceInst.type,
+    voice: sourceInst.voice,
+    color: sourceInst.color,
+    key: '', // Sera attribuée par reindexDuplicateKeys()
+    isDuplicate: true
+  };
+
+  INSTRUMENTS.splice(sourceIndex + 1, 0, newInst);
+
+  data[newId] = initInstrumentData(newId);
+  data[newId].volume = data[instId].volume;
+  data[newId].pan = data[instId].pan;
+  data[newId].reverb = data[instId].reverb;
+  data[newId].delay = data[instId].delay;
+  data[newId].waveX = data[instId].waveX;
+  data[newId].waveY = data[instId].waveY;
+
+  reindexDuplicateKeys();
+  renderMainRows();
+}
+
+function removeTrack(instId) {
+  const index = INSTRUMENTS.findIndex(i => i.id === instId);
+  if (index === -1) return;
+
+  INSTRUMENTS.splice(index, 1);
+  delete data[instId];
+
+  if (current === instId && $('editorModal').classList.contains('open')) {
+    $('closeModalBtn').click();
+  }
+
+  reindexDuplicateKeys();
+  renderMainRows();
+}
+
+// Re-numérote et attribue dynamiquement les touches W, X, C, V, B, N aux copies actives
+function reindexDuplicateKeys() {
+  let dupIdx = 0;
+  INSTRUMENTS.forEach(inst => {
+    if (inst.isDuplicate) {
+      inst.key = DUPLICATE_KEYS[dupIdx] || '';
+      dupIdx++;
+    }
+  });
+  duplicateCount = dupIdx; // Remet à jour le compteur global
+}
+
 function renderMainRows() {
   $('instrumentsList').innerHTML = '';
   INSTRUMENTS.forEach(inst => {
@@ -1387,10 +1452,10 @@ function renderMainRows() {
     const row = document.createElement('div');
     row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
 
-    // Condition pour afficher le bouton "-" uniquement sur les pistes dupliquées
-    const actionBtnHTML = inst.isDuplicate
+    // On affiche toujours le bouton "+" et on ajoute le bouton "-" uniquement sur les copies
+    const removeBtnHTML = inst.isDuplicate
       ? `<button class="btn-track btn-remove" title="Supprimer cette piste">-</button>`
-      : `<button class="btn-track btn-duplicate" title="Dupliquer sous cette piste">+</button>`;
+      : '';
 
     row.innerHTML = `
       <button class="instrument-row" style="--track: ${inst.color}">
@@ -1407,7 +1472,8 @@ function renderMainRows() {
       </button>
       <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key}]">M</button>
       <button class="btn-track btn-solo ${isSolo ? 'active' : ''}" title="Solo (Clic: Solo exclusif / Alt+Clic: Solo multiple)">S</button>
-      ${actionBtnHTML}
+      <button class="btn-track btn-duplicate" title="Dupliquer cette piste">+</button>
+      ${removeBtnHTML}
     `;
 
     row.querySelector('.instrument-row').onclick = (e) => {
@@ -1427,17 +1493,16 @@ function renderMainRows() {
       if ($('editorModal').classList.contains('open')) updateModalHeaderControls();
       if (e.target.blur) e.target.blur();
     };
+    row.querySelector('.btn-duplicate').onclick = (e) => {
+      e.stopPropagation();
+      duplicateTrack(inst.id);
+      if (e.target.blur) e.target.blur();
+    };
 
     if (inst.isDuplicate) {
       row.querySelector('.btn-remove').onclick = (e) => {
         e.stopPropagation();
         removeTrack(inst.id);
-        if (e.target.blur) e.target.blur();
-      };
-    } else {
-      row.querySelector('.btn-duplicate').onclick = (e) => {
-        e.stopPropagation();
-        duplicateTrack(inst.id);
         if (e.target.blur) e.target.blur();
       };
     }
