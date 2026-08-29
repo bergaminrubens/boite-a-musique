@@ -253,13 +253,11 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
         wx = config.waveX,
         wy = config.waveY;
 
-  // 1. Kick French Touch / Hard House — Gros punch, pitch-drop & saturation
   if (inst.voice === 'kick') {
     const osc = audio.createOscillator();
     const gain = audio.createGain();
     const drive = audio.createWaveShaper();
 
-    // Saturation analogique pour donner de la poigne
     const curve = new Float32Array(44100);
     const k = 20;
     for (let i = 0; i < 44100; i++) {
@@ -269,7 +267,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     drive.curve = curve;
 
     osc.type = 'sine';
-    // Impact initial ultra sec
     osc.frequency.setValueAtTime(freq * 8, time);
     osc.frequency.exponentialRampToValueAtTime(freq * 1.2, time + 0.02);
     osc.frequency.exponentialRampToValueAtTime(Math.max(25, freq * 0.3), time + 0.12);
@@ -287,7 +284,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 2. Snare 909 Pitched — Attaque claquante & timbre bruits filtrés
   if (inst.voice === 'snare') {
     const body = audio.createOscillator();
     const bodyGain = audio.createGain();
@@ -316,7 +312,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 3. Hi-Hat 909 Transposé — Brillance métallique très découpée
   if (inst.voice === 'hat') {
     const ratio = freq / 261.63;
     const freqs = [387 * ratio, 532 * ratio, 600 * ratio, 785 * ratio, 920 * ratio, 1150 * ratio];
@@ -340,7 +335,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 4. Acid / Moog Bass (Type "Da Funk") — Sawtooth résonante + Sub-Octave
   if (inst.voice === 'sub') {
     const osc1 = audio.createOscillator();
     const osc2 = audio.createOscillator();
@@ -350,13 +344,13 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     osc1.type = 'sawtooth';
     osc2.type = 'square';
     osc1.frequency.setValueAtTime(freq, time);
-    osc2.frequency.setValueAtTime(freq * 0.5, time); // Sub à l'octave inférieure
+    osc2.frequency.setValueAtTime(freq * 0.5, time);
 
     filter.type = 'lowpass';
     const cutoff = 250 + wx * 4500;
     filter.frequency.setValueAtTime(cutoff * 2, time);
     filter.frequency.exponentialRampToValueAtTime(Math.max(80, cutoff * 0.2), time + 0.15 + wy * 0.15);
-    filter.Q.value = 5 + wy * 8; // Résonance acide
+    filter.Q.value = 5 + wy * 8;
 
     envelope(gain, v * 1.0, time, 0.002, len);
     osc1.connect(filter);
@@ -369,7 +363,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 5. Disco Wood Block / Perc — Son percutant et sec
   if (inst.voice === 'kalimba') {
     const osc = audio.createOscillator();
     const filter = audio.createBiquadFilter();
@@ -393,7 +386,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 6. French Funk Guitar / Pluck — FM pincée façon riff disco filtré
   if (inst.voice === 'pluck') {
     const carrier = audio.createOscillator();
     const modulator = audio.createOscillator();
@@ -425,7 +417,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 7. French House Chord Stab (Type "One More Time") — Accord plaqué filtré
   if (inst.voice === 'rhodes') {
     const osc1 = audio.createOscillator();
     const osc2 = audio.createOscillator();
@@ -437,10 +428,9 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     osc2.type = 'sawtooth';
     osc3.type = 'square';
 
-    // Triade mineure/majeure automatique pour créer l'effet d'échantillon (Sample Stab)
     osc1.frequency.setValueAtTime(freq, time);
-    osc2.frequency.setValueAtTime(freq * 1.2, time);  // Tierce
-    osc3.frequency.setValueAtTime(freq * 1.498, time); // Quinte
+    osc2.frequency.setValueAtTime(freq * 1.2, time);
+    osc3.frequency.setValueAtTime(freq * 1.498, time);
 
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(200, time);
@@ -458,7 +448,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 8. Lead Synth 80s / Robot Voice (Type "Robot Rock") — Multi-Saw décalé et agressif
   if (inst.voice === 'brass') {
     const osc1 = audio.createOscillator();
     const osc2 = audio.createOscillator();
@@ -469,7 +458,7 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     osc2.type = 'sawtooth';
 
     osc1.frequency.setValueAtTime(freq, time);
-    osc2.frequency.setValueAtTime(freq * 1.008, time); // Detune plus affirmé
+    osc2.frequency.setValueAtTime(freq * 1.008, time);
 
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(300, time);
@@ -486,7 +475,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 9. FM Crystal Bell — Cloche brillante et perçante
   if (inst.voice === 'bell') {
     const carrier = audio.createOscillator();
     const modulator = audio.createOscillator();
@@ -512,7 +500,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 10. Vocal Flute Synth / Talkbox Effect — Filtre passe-bande serré
   if (inst.voice === 'flute') {
     const osc = audio.createOscillator();
     const filter = audio.createBiquadFilter();
@@ -523,7 +510,7 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
     filter.type = 'bandpass';
     filter.frequency.setValueAtTime(600 + wx * 3000, time);
-    filter.Q.value = 6 + wy * 5; // Simule une voyelle synthétique
+    filter.Q.value = 6 + wy * 5;
 
     envelope(gain, v * 0.85, time, 0.015, len);
     osc.connect(filter);
@@ -535,7 +522,6 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
     return;
   }
 
-  // 11. Cosmic Filter Sweep Pad (Type "Voyager") — Nappe stéréo modulée
   if (inst.voice === 'pad') {
     const osc1 = audio.createOscillator();
     const osc2 = audio.createOscillator();
@@ -584,19 +570,18 @@ function playCurrentInstrumentSound() {
   const inst = INSTRUMENTS.find(i => i.id === current);
   if (!inst) return;
 
-  // Tessiture adaptée selon le rôle de l'instrument dans le morceau
   const targetNotes = {
-    kick: 'Do2',      // ~65 Hz  : Impact grave
-    sub: 'Do2',       // ~65 Hz  : Basse profonde
-    snare: 'Do3',     // ~130 Hz : Médium percussion
-    hat: 'Do4',       // ~261 Hz : Aigu ciselé
-    kalimba: 'Do4',   // ~261 Hz : Percussion bois claire
-    pluck: 'Do4',     // ~261 Hz : Guitare / Sitar médium-aigu
-    rhodes: 'Do3',    // ~130 Hz : Clavier médium
-    brass: 'Do3',     // ~130 Hz : Cuivres puissants
-    bell: 'Do5',      // ~523 Hz : Cloches très cristallines
-    flute: 'Do4',     // ~261 Hz : Flûte expressive
-    pad: 'Do3'        // ~130 Hz : Nappe d'accompagnement
+    kick: 'Do2',
+    sub: 'Do2',
+    snare: 'Do3',
+    hat: 'Do4',
+    kalimba: 'Do4',
+    pluck: 'Do4',
+    rhodes: 'Do3',
+    brass: 'Do3',
+    bell: 'Do5',
+    flute: 'Do4',
+    pad: 'Do3'
   };
 
   const targetNoteName = targetNotes[inst.voice] || 'Do3';
@@ -1105,7 +1090,6 @@ window.addEventListener('keydown', event => {
 
   const isModalOpen = $('editorModal').classList.contains('open');
 
-  // Touche Échap (Escape) pour fermer la fenêtre
   if (event.key === 'Escape' && isModalOpen) {
     event.preventDefault();
     $('closeModalBtn').click();
@@ -1323,7 +1307,6 @@ function duplicateTrack(instId) {
   const sourceInst = INSTRUMENTS[sourceIndex];
   const newId = Math.max(...INSTRUMENTS.map(i => i.id)) + 1;
 
-  // Création de la copie avec le drapeau `isDuplicate: true` bien ancré
   const newInst = {
     ...sourceInst,
     id: newId,
@@ -1334,7 +1317,6 @@ function duplicateTrack(instId) {
 
   INSTRUMENTS.splice(sourceIndex + 1, 0, newInst);
 
-  // Copie des données audio
   if (typeof initInstrumentData === 'function') {
     data[newId] = initInstrumentData(newId);
   } else {
@@ -1342,6 +1324,7 @@ function duplicateTrack(instId) {
   }
 
   if (data[instId]) {
+    data[newId].grid = JSON.parse(JSON.stringify(data[instId].grid));
     data[newId].volume = data[instId].volume;
     data[newId].pan = data[instId].pan;
     data[newId].reverb = data[instId].reverb;
@@ -1405,7 +1388,6 @@ function renderMainRows() {
     const row = document.createElement('div');
     row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
 
-    // Condition stricte : Si isDuplicate est true -> bouton `-`, sinon -> bouton `+`
     const actionBtnHTML = inst.isDuplicate
       ? `<button class="btn-track btn-remove" title="Supprimer cette piste">-</button>`
       : `<button class="btn-track btn-duplicate" title="Dupliquer cette piste">+</button>`;
@@ -1428,7 +1410,6 @@ function renderMainRows() {
       ${actionBtnHTML}
     `;
 
-    // Événements
     const mainBtn = row.querySelector('.instrument-row');
     if (mainBtn) {
       mainBtn.onclick = (e) => {
@@ -1459,7 +1440,6 @@ function renderMainRows() {
       };
     }
 
-    // Association de l'action selon le type de piste
     if (inst.isDuplicate) {
       const removeBtn = row.querySelector('.btn-remove');
       if (removeBtn) {
@@ -1532,66 +1512,6 @@ function setupHomeFooterHelpText() {
   `;
 
   instList.parentNode.insertBefore(note, instList.nextSibling);
-}
-
-function renderMainRows() {
-  $('instrumentsList').innerHTML = '';
-  INSTRUMENTS.forEach(inst => {
-    const states = Array.from({ length: STEPS_COUNT }, (_, step) =>
-      Math.max(...NOTES.map(note => data[inst.id].grid[note.id][step]))
-    );
-
-    const isSolo = data[inst.id].solo;
-    const isMute = data[inst.id].mute;
-
-    const row = document.createElement('div');
-    row.className = `instrument-row-container ${isMute ? 'muted' : ''}`;
-
-    row.innerHTML = `
-      <button class="instrument-row" style="--track: ${inst.color}">
-        <span class="inst-info">
-          <span class="key-badge" title="Touche Mute/Unmute">${inst.key}</span>
-          <span>
-            <span class="instrument-name">${inst.name}</span>
-            <span class="instrument-type">${inst.type}</span>
-          </span>
-        </span>
-        <span class="pattern">
-          ${states.map(value => `<i class="${value ? 'active' : ''} ${value === 2 ? 'linked' : ''}"></i>`).join('')}
-        </span>
-      </button>
-      <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key}]">M</button>
-      <button class="btn-track btn-solo ${isSolo ? 'active' : ''}" title="Solo (Clic: Solo exclusif / Alt+Clic: Solo multiple)">S</button>
-      <button class="btn-track btn-duplicate" title="Dupliquer sous cette piste">+</button>
-    `;
-
-    row.querySelector('.instrument-row').onclick = (e) => {
-      openEditor(inst.id);
-      if (e.target.blur) e.target.blur();
-    };
-    row.querySelector('.btn-mute').onclick = (e) => {
-      e.stopPropagation();
-      data[inst.id].mute = !data[inst.id].mute;
-      renderMainRows();
-      if (e.target.blur) e.target.blur();
-    };
-    row.querySelector('.btn-solo').onclick = (e) => {
-      e.stopPropagation();
-      handleSoloClick(inst.id, e.altKey || altDown);
-      renderMainRows();
-      if ($('editorModal').classList.contains('open')) updateModalHeaderControls();
-      if (e.target.blur) e.target.blur();
-    };
-    row.querySelector('.btn-duplicate').onclick = (e) => {
-      e.stopPropagation();
-      duplicateTrack(inst.id);
-      if (e.target.blur) e.target.blur();
-    };
-
-    $('instrumentsList').append(row);
-  });
-
-  setupHomeFooterHelpText();
 }
 
 function updateLabels() {
@@ -1911,10 +1831,8 @@ function animate() {
 
   for (let j = 0; j < 15; j++) {
     draw.beginPath();
-    
-    // On va un tout petit peu plus loin que le bord droit (+ 10px) pour éviter qu'il manque un bout
     for (let x = 0; x <= box.width + 10; x += 9) {
-      const targetX = Math.min(x, box.width); // On plaque le dernier point exactement sur le bord si besoin
+      const targetX = Math.min(x, box.width);
       const y = box.height / 2
         + (j - 7) * 6
         + Math.sin(targetX * .008 + t + j * .2) * Math.cos(targetX * .017 - t * .7 + j * .1) * 30;
