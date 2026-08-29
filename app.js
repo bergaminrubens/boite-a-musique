@@ -1105,10 +1105,10 @@ window.addEventListener('keydown', event => {
 
   const isModalOpen = $('editorModal').classList.contains('open');
 
-  // Touche Échap pour fermer la fenêtre instrument
+  // Touche Échap (Escape) pour fermer la fenêtre
   if (event.key === 'Escape' && isModalOpen) {
     event.preventDefault();
-    closeEditor(); // Ou $('closeModalBtn').click() selon le nom de ta fonction de fermeture
+    $('closeModalBtn').click();
     return;
   }
 
