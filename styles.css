@@ -446,6 +446,22 @@ canvas {
   transition: all 0.15s ease;
 }
 
+.btn-remove {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #e53e3e;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: #fff5f5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
 .btn-remove:hover {
   background: #e53e3e;
   color: #ffffff;
