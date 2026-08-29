@@ -428,3 +428,26 @@ canvas {
   filter: brightness(1.25);
   box-shadow: 0 0 8px rgba(49, 130, 206, 0.6);
 }
+
+/* Bouton de suppression "-" */
+.btn-remove {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #4a5568;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e0;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-remove:hover {
+  background: #e53e3e;
+  color: #ffffff;
+  border-color: #c53030;
+}
