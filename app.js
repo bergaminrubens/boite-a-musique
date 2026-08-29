@@ -1333,6 +1333,9 @@ function duplicateTrack(instId) {
     data[newId].waveY = data[instId].waveY;
   }
 
+  // Piste dupliquée mutée par défaut pour éviter la superposition de son
+  data[newId].mute = true;
+
   reindexDuplicateKeys();
   renderMainRows();
 }
