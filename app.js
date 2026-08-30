@@ -5421,7 +5421,12 @@ function setupHomeFooterHelpText() {
 
   note.innerHTML = `
     <div style="${cardStyle}">
-      <strong style="color: #2d3748; display: block; margin-bottom: 2px;">🎹 Raccourcis Mute / Démute</strong>
+      <strong style="color: #2d3748; display: block; margin-bottom: 2px;">🎵 Variantes d’instruments</strong>
+      <b>Clique sur le nom d’un instrument</b> pour ouvrir son tiroir et découvrir <b>4 variantes</b> sonores différentes. 
+    </div>
+
+    <div style="${cardStyle}">
+      <strong style="color: #2d3748; display: block; margin-bottom: 2px;">🎹 Raccourcis Mute / Démute grâce aux touches de ton clavier</strong>
       <b>A</b> (Kick) · <b>Z</b> (Snare) · <b>E</b> (Hat) · <b>R</b> (Bass) · <b>T</b> (Perc) · <b>Y</b> (Guitar) · <b>U</b> (Rhodes) · <b>I</b> (Brass) · <b>O</b> (Bell) · <b>P</b> (Flute) · <b>Q</b> (Pad)
     </div>
 
