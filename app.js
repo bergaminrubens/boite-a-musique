@@ -1057,104 +1057,76 @@ const DEFAULT_NOTE_INDEX = DO3_INDEX !== -1 ? DO3_INDEX : Math.floor(NOTES.lengt
 
 // 3. Application du motif initial
 [
+  // KICK — temps 1 + 3, avec quelques relances
   [0, KICK_DEFAULT_INDEX, [
-    , 16, 32, 48
+    0, 8, 16, 24, 32, 40, 48, 56
   ]],
 
+  // SNARE — temps 2 + 4
   [1, DEFAULT_NOTE_INDEX + 3, [
-    16, 48
+    8, 24, 40, 56
   ]],
 
+  // HI-HAT — croches régulières
   [2, DEFAULT_NOTE_INDEX + 9, [
-    4, 12, 20, 28, 36, 44, 52, 60
+    0, 4, 8, 12, 16, 20, 24, 28,
+    32, 36, 40, 44, 48, 52, 56, 60
   ]],
 
+  // BASS — groove simple autour du kick
   [3, BASS_DEFAULT_INDEX, [
-    0, 10, 16, 27, 32, 42, 48, 59
+    0, 16, 32, 48
   ]],
 
   [3, BASS_DEFAULT_INDEX + 3, [
-    14, 30, 46
-  ]],
-
-  [3, BASS_DEFAULT_INDEX + 7, [
-    23, 55
-  ]],
-
-  [4, DEFAULT_NOTE_INDEX, [
-    0
-  ]],
-
-  [4, DEFAULT_NOTE_INDEX + 3, [
-    0
-  ]],
-
-  [4, DEFAULT_NOTE_INDEX + 7, [
-    0
-  ]],
-
-  [5, DEFAULT_NOTE_INDEX + 10, [
-    7, 23, 39, 55
-  ]],
-
-  [7, DEFAULT_NOTE_INDEX + 8, [
     12, 28, 44, 60
   ]],
 
+  // CLAP / PERCUSSION légère
+  [4, DEFAULT_NOTE_INDEX + 7, [
+    8, 24, 40, 56
+  ]],
+
+  // HI-HAT ouvert — fin de certaines mesures
+  [5, DEFAULT_NOTE_INDEX + 10, [
+    14, 30, 46, 62
+  ]],
+
+  // PERCUSSION — petites syncopes
+  [7, DEFAULT_NOTE_INDEX + 8, [
+    6, 22, 38, 54
+  ]],
+
+  // NOTE MÉLODIQUE — petite réponse
   [8, DEFAULT_NOTE_INDEX + 7, [
     3, 19, 35, 51
   ]],
 
+  // ACCENT / CRASH — début des mesures
   [9, DEFAULT_NOTE_INDEX + 12, [
-    14, 46
+    0, 32
   ]],
 
+  // ACCORD — début de chaque mesure
   [10, DEFAULT_NOTE_INDEX, [
-    0
+    0, 32
   ]],
 
   [10, DEFAULT_NOTE_INDEX + 3, [
-    0
+    0, 32
   ]],
 
   [10, DEFAULT_NOTE_INDEX + 7, [
-    0
+    0, 32
   ]],
 
-  [10, DEFAULT_NOTE_INDEX + 8, [
-    16
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 11, [
-    16
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 15, [
-    16
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 3, [
-    32
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 7, [
-    32
-  ]],
-
+  // Petite variation d'accord au milieu
   [10, DEFAULT_NOTE_INDEX + 10, [
-    32
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 7, [
-    48
-  ]],
-
-  [10, DEFAULT_NOTE_INDEX + 10, [
-    48
+    16, 48
   ]],
 
   [10, DEFAULT_NOTE_INDEX + 14, [
-    48
+    16, 48
   ]]
 ]
 
