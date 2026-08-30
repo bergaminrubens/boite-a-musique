@@ -102,11 +102,15 @@ canvas {
 .instrument-row {
   --track: #667;
   flex: 1;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 210px 1fr;
+  grid-template-columns: 210px minmax(0, 1fr);
   gap: 14px;
   align-items: center;
-  padding: 10px 16px;
+
+  /* Réduit l'espace vertical autour du pattern */
+  padding: 5px 16px;
+
   border: 1px solid var(--line);
   border-radius: 16px;
   background: #f7fafc;
@@ -207,22 +211,44 @@ canvas {
   color: var(--text-muted);
 }
 
+/* =========================================================
+   PATTERN PRINCIPAL
+   ========================================================= */
+
 .pattern {
   display: grid;
-  grid-template-columns: repeat(32, 1fr);
+  grid-template-columns: repeat(64, minmax(0, 1fr));
   gap: 2px;
+  width: 100%;
+  min-width: 0;
+
+  /* 8 steps blancs / 8 steps verts */
+  background:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(100% / 64 - 1px),
+      rgba(100, 116, 139, 0.12) calc(100% / 64 - 1px),
+      rgba(100, 116, 139, 0.12) calc(100% / 64)
+    ),
+    repeating-linear-gradient(
+      to right,
+      #ffffff 0,
+      #ffffff 12.5%,
+      rgba(72, 255, 0, 0.08) 12.5%,
+      rgba(72, 255, 0, 0.08) 25%
+    );
 }
 
 .pattern i {
-  height: 16px;
+  height: 20px;
   border-radius: 3px;
-  background: #e2e8f0;
+
+  /* Le fond vient du parent */
+  background: transparent;
 }
 
-.pattern i:nth-child(4n+1) {
-  background: #cbd5e0;
-}
-
+/* Couleur des notes : INCHANGÉE */
 .pattern i.active {
   background: var(--track) !important;
   box-shadow: 0 2px 4px color-mix(in srgb, var(--track), transparent 55%);
@@ -250,9 +276,9 @@ canvas {
 }
 
 .modal-content {
-  width: min(1100px, 80vw); 
-  max-height: 90vh;        
-  overflow-y: auto;        
+  width: min(1100px, 80vw);
+  max-height: 90vh;
+  overflow-y: auto;
   background: white;
   border-radius: var(--radius);
   box-shadow: 0 20px 50px #0003;
@@ -306,27 +332,42 @@ canvas {
   color: var(--text-muted);
 }
 
+/* =========================================================
+   ÉDITEUR INDIVIDUEL
+   ========================================================= */
+
 .steps-wrapper {
   display: flex;
   flex: 1;
+  min-width: 0;
+
+  /* 8 steps blancs / 8 steps verts */
+  background:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(100% / 64 - 1px),
+      rgba(100, 116, 139, 0.12) calc(100% / 64 - 1px),
+      rgba(100, 116, 139, 0.12) calc(100% / 64)
+    ),
+    repeating-linear-gradient(
+      to right,
+      #ffffff 0,
+      #ffffff 12.5%,
+      rgba(72, 255, 0, 0.08) 12.5%,
+      rgba(72, 255, 0, 0.08) 25%
+    );
 }
 
 .step-cell {
   flex: 1;
-  border-right: 1px dashed #edf2f7;
-  background: white;
+  min-width: 0;
+  border-right: 0;
+  background: transparent;
   cursor: pointer;
 }
 
-.step-cell:nth-child(4n+1) {
-  border-left: 1px solid #cbd5e0;
-}
-
-.step-cell:nth-child(8n+1):nth-child(-n+16),
-.step-cell:nth-child(8n+1):nth-child(n+17) {
-  background: #f8fafc;
-}
-
+/* Couleur des notes : INCHANGÉE */
 .step-cell.active-note {
   background: var(--track) !important;
   border-right-color: var(--track);
@@ -419,4 +460,86 @@ canvas {
     gap: 8px;
     padding: 10px;
   }
+}
+
+/* Zone du nom de l'instrument cliquable */
+.inst-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.inst-name-wrapper:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.inst-text-block {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.btn-drawer-toggle {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  /* Le clic est capturé par le nom wrapper complet */
+}
+
+/* Tiroir d'instruments */
+.instrument-drawer {
+  display: none;
+  grid-column: 1 / -1;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: -4px;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.instrument-drawer.open {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.preset-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.preset-option:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+.preset-option.active {
+  background: var(--bg-mint);
+  border-color: #48bb78;
+}
+
+.preset-option .preset-title {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-dark);
+}
+
+.preset-option .preset-desc {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 2px;
 }
