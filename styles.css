@@ -378,9 +378,18 @@ canvas {
   border-radius: 0;
 }
 
+/* Lecture : une seule cellule, sans débordement */
 .step-cell.playing {
-  outline: 2px solid #ed8936;
-  outline-offset: -2px;
+  outline: 1px solid #ed8936;
+  outline-offset: -1px;
+  box-sizing: border-box;
+}
+
+/* Même indicateur sur la HOME */
+.pattern i.playing {
+  outline: 1px solid #ed8936;
+  outline-offset: -1px;
+  box-sizing: border-box;
 }
 
 /* Surbrillance et prévisualisation des notes */
