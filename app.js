@@ -4434,34 +4434,36 @@ function setupRecordButton() {
   recBtn.innerHTML = `<span style="color: #e53e3e; font-size: 0.8rem;">●</span> Enregistrer WAV`;
 
   recBtn.onclick = (e) => {
-    initAudio();
-    if (!isRecording && !pendingRecording) {
-      pendingRecording = true;
-      recBtn.innerHTML = `Attente début de mesure (Temps 1)...`;
+  initAudio();
 
-      if (!isPlaying) togglePlay();
-    } else if (isRecording) {
-      isRecording = false;
-      if (recorderProcessor) {
-        recorderProcessor.disconnect();
-        master.disconnect(recorderProcessor);
-        recorderProcessor = null;
-      }
+  if (!isRecording && !pendingRecording) {
+    pendingRecording = true;
 
-      const wavBlob = createWavBlob(audioBuffersLeft, audioBuffersRight, audio.sampleRate);
-      const url = URL.createObjectURL(wavBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `sequenceur-composition-${Date.now()}.wav`;
-      a.click();
-      URL.revokeObjectURL(url);
+    recBtn.innerHTML = `Attente début de mesure (Temps 1)...`;
+    recBtn.style.background = '#fff7ed';
+    recBtn.style.color = '#c05621';
 
-      recBtn.innerHTML = `<span style="color: #e53e3e; font-size: 0.8rem;">●</span> Enregistrer WAV`;
-      recBtn.style.background = '#ffffff';
-      recBtn.style.color = '#4a5568';
+    if (!isPlaying) {
+      togglePlay();
     }
-    if (e.target.blur) e.target.blur();
-  };
+
+  } else if (pendingRecording) {
+    // Annuler l'attente avant le début de la mesure
+    pendingRecording = false;
+
+    recBtn.innerHTML =
+      `<span style="color: #e53e3e; font-size: 0.8rem;">●</span> Enregistrer WAV`;
+
+    recBtn.style.background = '#ffffff';
+    recBtn.style.color = '#4a5568';
+
+  } else if (isRecording) {
+    // Utilise UNE SEULE fonction d'arrêt
+    stopAudioRecording();
+  }
+
+  if (e.target.blur) e.target.blur();
+};
 
   controlsBar.insertBefore(recBtn, $('clearBtn'));
 }
