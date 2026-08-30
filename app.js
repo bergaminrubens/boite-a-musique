@@ -1,512 +1,912 @@
 const PRESETS = {
+
   kick: [
-    {
-      name: 'Hard Punch Kick',
-      desc: 'Attaque tranchante et sub ultra lourd pour un impact max',
-      wave: 'triangle',
-      drive: 0.28,
-      startFreq: 260,
-      subFreq: 42,
-      dur: 0.32,
-      level: 0.95,
-      waveX: 0.45,
-      waveY: 0.92
-    },
-    {
-      name: 'Sub Destroyer 808',
-      desc: 'Basse sub profonde avec distorsion analogique chaude',
-      wave: 'sine',
-      drive: 0.35,
-      startFreq: 180,
-      subFreq: 32,
-      dur: 0.65,
-      level: 0.98,
-      waveX: 0.15,
-      waveY: 0.98
-    },
-    {
-      name: 'Tight Techno Kick',
-      desc: 'Kick sec, rapide et saturé qui traverse parfaitement le mix',
-      wave: 'square',
-      drive: 0.40,
-      startFreq: 320,
-      subFreq: 50,
-      dur: 0.18,
-      level: 0.90,
-      waveX: 0.80,
-      waveY: 0.75
-    },
-    {
-      name: 'Fat Moog Knock',
-      desc: 'Kick très rond avec un médium bien défini et du corps',
-      wave: 'triangle',
-      drive: 0.22,
-      startFreq: 210,
-      subFreq: 45,
-      dur: 0.28,
-      level: 0.92,
-      waveX: 0.38,
-      waveY: 0.85
-    }
-  ],
+  {
+    name: 'Hard Punch Kick',
+    desc: 'Kick brutal et claquant, attaque très courte, gros impact et sub dense',
+    type: 'punch',
+    startRatio: 5.2,
+    endRatio: 0.88,
+    pitchDrop: 0.055,
+    bodyDur: 0.24,
+    clickRatio: 34,
+    clickDur: 0.009,
+    clickLevel: 0.82,
+    bodyLevel: 1.18,
+    drive: 0.72,
+    driveMix: 0.9,
+    decay: 0.22,
+    attack: 0.00035,
+    level: 0.9,
+    waveX: 0.34,
+    waveY: 0.94
+  },
+
+  {
+    name: 'Sub Destroyer 808',
+    desc: 'Kick 808 profond avec chute de pitch massive et longue queue sub saturée',
+    type: '808',
+    startRatio: 4.4,
+    endRatio: 0.5,
+    pitchDrop: 0.14,
+    bodyDur: 0.72,
+    clickRatio: 15,
+    clickDur: 0.007,
+    clickLevel: 0.18,
+    bodyLevel: 1.08,
+    drive: 0.42,
+    driveMix: 0.62,
+    decay: 0.68,
+    attack: 0.001,
+    level: 0.94,
+    waveX: 0.08,
+    waveY: 0.98
+  },
+
+  {
+    name: 'Tight Techno Kick',
+    desc: 'Kick techno court et violent avec attaque sèche, click médium et corps très compact',
+    type: 'techno',
+    startRatio: 6.0,
+    endRatio: 0.82,
+    pitchDrop: 0.032,
+    bodyDur: 0.16,
+    clickRatio: 42,
+    clickDur: 0.0045,
+    clickLevel: 0.9,
+    bodyLevel: 1.0,
+    drive: 0.86,
+    driveMix: 0.95,
+    decay: 0.14,
+    attack: 0.0002,
+    level: 0.88,
+    waveX: 0.84,
+    waveY: 0.78
+  },
+
+  {
+    name: 'Fat Moog Knock',
+    desc: 'Kick analogique rond et épais avec knock grave et saturation douce',
+    type: 'moog',
+    startRatio: 4.8,
+    endRatio: 0.92,
+    pitchDrop: 0.085,
+    bodyDur: 0.38,
+    clickRatio: 13,
+    clickDur: 0.016,
+    clickLevel: 0.3,
+    bodyLevel: 1.12,
+    drive: 0.36,
+    driveMix: 0.52,
+    decay: 0.36,
+    attack: 0.0012,
+    level: 0.88,
+    waveX: 0.56,
+    waveY: 0.7
+  }
+],
 
   snare: [
-    {
-      name: 'Crispy Acoustic Snare',
-      desc: 'Caisse claire bois et métal avec attaque croustillante',
-      wave: 'triangle',
-      bodyFreq: 190,
-      noiseDur: 0.12,
-      noiseHp: 1150,
-      level: 0.62,
-      waveX: 0.42,
-      waveY: 0.52
-    },
-    {
-      name: 'Dry Studio Snare',
-      desc: 'Snare courte, sèche et précise',
-      wave: 'sine',
-      bodyFreq: 205,
-      noiseDur: 0.075,
-      noiseHp: 1700,
-      level: 0.64,
-      waveX: 0.2,
-      waveY: 0.25
-    },
-    {
-      name: 'Bright Metal Snare',
-      desc: 'Caisse claire brillante avec un joli claquement métallique',
-      wave: 'triangle',
-      bodyFreq: 285,
-      noiseDur: 0.105,
-      noiseHp: 2850,
-      level: 0.56,
-      waveX: 0.72,
-      waveY: 0.62
-    },
-    {
-      name: 'Soft Vintage Snare',
-      desc: 'Snare chaude et légèrement étouffée façon boîte analogique',
-      wave: 'sine',
-      bodyFreq: 165,
-      noiseDur: 0.14,
-      noiseHp: 850,
-      level: 0.66,
-      waveX: 0.12,
-      waveY: 0.7
-    }
-  ],
+  {
+    name: 'Live Acoustic Snare',
+    desc: 'Caisse claire acoustique vivante avec attaque de baguette, corps tendu et résonance de peau',
+    type: 'acoustic',
+    bodyRatio: 1,
+    bodyDropRatio: 0.72,
+    bodyDropTime: 0.032,
+    bodyDur: 0.14,
+    bodyLevel: 0.94,
+    noiseDur: 0.19,
+    noiseLevel: 0.86,
+    noiseHpRatio: 18,
+    noiseBpRatio: 48,
+    noiseQ: 0.8,
+    rimRatio: 8.5,
+    rimDur: 0.006,
+    rimLevel: 0.48,
+    snapRatio: 22,
+    snapDur: 0.004,
+    snapLevel: 0.38,
+    attack: 0.0004,
+    decay: 0.14,
+    drive: 0.08,
+    level: 0.72,
+    waveX: 0.38,
+    waveY: 0.54
+  },
+
+  {
+    name: 'TR-909 Dry Snare',
+    desc: 'Snare électronique sèche et agressive avec claquement court, corps médium et bruit métallique',
+    type: '909',
+    bodyRatio: 1.12,
+    bodyDropRatio: 0.48,
+    bodyDropTime: 0.018,
+    bodyDur: 0.105,
+    bodyLevel: 0.78,
+    noiseDur: 0.115,
+    noiseLevel: 0.96,
+    noiseHpRatio: 26,
+    noiseBpRatio: 72,
+    noiseQ: 1.15,
+    rimRatio: 13,
+    rimDur: 0.004,
+    rimLevel: 0.56,
+    snapRatio: 31,
+    snapDur: 0.003,
+    snapLevel: 0.52,
+    attack: 0.00015,
+    decay: 0.095,
+    drive: 0.28,
+    level: 0.68,
+    waveX: 0.76,
+    waveY: 0.68
+  },
+
+  {
+    name: 'Crushed Analog Snare',
+    desc: 'Snare sale et compacte avec saturation, bruit granuleux et attaque très présente',
+    type: 'crushed',
+    bodyRatio: 0.94,
+    bodyDropRatio: 0.62,
+    bodyDropTime: 0.026,
+    bodyDur: 0.18,
+    bodyLevel: 0.86,
+    noiseDur: 0.22,
+    noiseLevel: 1.02,
+    noiseHpRatio: 14,
+    noiseBpRatio: 58,
+    noiseQ: 0.55,
+    rimRatio: 6.5,
+    rimDur: 0.008,
+    rimLevel: 0.4,
+    snapRatio: 18,
+    snapDur: 0.005,
+    snapLevel: 0.44,
+    attack: 0.00025,
+    decay: 0.17,
+    drive: 0.65,
+    level: 0.66,
+    waveX: 0.64,
+    waveY: 0.82
+  },
+
+  {
+    name: 'Soft Vintage Snare',
+    desc: 'Snare vintage mate et chaleureuse avec corps rond, bruit doux et attaque feutrée',
+    type: 'vintage',
+    bodyRatio: 0.9,
+    bodyDropRatio: 0.68,
+    bodyDropTime: 0.042,
+    bodyDur: 0.21,
+    bodyLevel: 1.0,
+    noiseDur: 0.17,
+    noiseLevel: 0.58,
+    noiseHpRatio: 11,
+    noiseBpRatio: 34,
+    noiseQ: 0.65,
+    rimRatio: 5.2,
+    rimDur: 0.009,
+    rimLevel: 0.2,
+    snapRatio: 15,
+    snapDur: 0.006,
+    snapLevel: 0.15,
+    attack: 0.0012,
+    decay: 0.2,
+    drive: 0.12,
+    level: 0.76,
+    waveX: 0.16,
+    waveY: 0.32
+  }
+],
 
   hat: [
     {
-      name: 'Tick Metallic Hat',
-      desc: 'Charley métallique très ciselé',
-      wave: 'square',
-      freqs: [330, 510, 760, 980],
-      hpFreq: 6200,
-      dur: 0.028,
-      level: 0.48,
-      waveX: 0.7,
-      waveY: 0.18
-    },
-    {
-      name: 'Clean Analog Hat',
-      desc: 'Hi-hat court et doux avec une texture naturelle',
-      wave: 'square',
-      freqs: [270, 430, 590, 810],
+      name: 'Live Choked Hat',
+      desc: 'Charley acoustique frappé puis immédiatement étouffé par la main',
+      dur: 0.045,
       hpFreq: 5200,
-      dur: 0.035,
-      level: 0.5,
-      waveX: 0.32,
-      waveY: 0.12
-    },
-    {
-      name: 'Bright Open Hat',
-      desc: 'Charley ouvert brillant avec une belle queue',
-      wave: 'sawtooth',
-      freqs: [220, 340, 470, 630],
-      hpFreq: 4300,
-      dur: 0.38,
-      level: 0.43,
-      waveX: 0.68,
-      waveY: 0.68
-    },
-    {
-      name: 'Soft Tape Hat',
-      desc: 'Hi-hat feutré, léger et légèrement granuleux',
-      wave: 'triangle',
-      freqs: [300, 470, 650],
-      hpFreq: 4700,
-      dur: 0.065,
+      metalFreq: 8200,
+      metalQ: 0.85,
+      bodyFreq: 3600,
+      noiseLevel: 1.15,
+      bodyLevel: 0.32,
+      bodyAttack: 0.0012,
+      metalLevel: 0.28,
+      metalAttack: 0.0004,
+      choke: 0.28,
+      attack: 0.0007,
+      click: true,
+      clickFreq: 11200,
+      clickLevel: 0.32,
+      clickDur: 0.004,
       level: 0.54,
-      waveX: 0.18,
-      waveY: 0.32
+      waveX: 0.9,
+      waveY: 0.86
+    },
+    {
+      name: 'TR-909 Closed Hat',
+      desc: 'Charley fermé électronique métallique, sec et agressif inspiré de la TR-909',
+      dur: 0.035,
+      hpFreq: 6100,
+      metalFreq: 9300,
+      metalQ: 1.05,
+      bodyFreq: 4300,
+      noiseLevel: 1.0,
+      bodyLevel: 0.18,
+      bodyAttack: 0.0008,
+      metalLevel: 0.46,
+      metalAttack: 0.00025,
+      choke: 0.42,
+      attack: 0.0004,
+      metalRatios: [1, 1.13, 1.29, 1.51, 1.73],
+      metalBase: 6900,
+      metalWave: 'square',
+      detune: 7,
+      click: true,
+      clickFreq: 10800,
+      clickLevel: 0.2,
+      clickDur: 0.003,
+      level: 0.52,
+      waveX: 0.86,
+      waveY: 0.82
+    },
+    {
+      name: 'TR-909 Open Hat',
+      desc: 'Charley ouvert métallique et brillant avec une longue décroissance',
+      dur: 0.34,
+      hpFreq: 5400,
+      metalFreq: 7800,
+      metalQ: 0.72,
+      bodyFreq: 3300,
+      noiseLevel: 1.0,
+      bodyLevel: 0.26,
+      bodyAttack: 0.001,
+      metalLevel: 0.38,
+      metalAttack: 0.0004,
+      choke: 0.96,
+      attack: 0.0005,
+      metalRatios: [1, 1.17, 1.31, 1.49, 1.67],
+      metalBase: 6200,
+      metalWave: 'square',
+      detune: 9,
+      click: true,
+      clickFreq: 10400,
+      clickLevel: 0.18,
+      clickDur: 0.004,
+      level: 0.48,
+      waveX: 0.78,
+      waveY: 0.94
+    },
+    {
+      name: 'Loose Jazz Hat',
+      desc: 'Charley acoustique souple et irrégulier, plus sombre et organique',
+      dur: 0.065,
+      hpFreq: 4300,
+      metalFreq: 6800,
+      metalQ: 0.58,
+      bodyFreq: 2800,
+      noiseLevel: 0.82,
+      bodyLevel: 0.42,
+      bodyAttack: 0.002,
+      metalLevel: 0.19,
+      metalAttack: 0.001,
+      choke: 0.62,
+      attack: 0.0015,
+      click: true,
+      clickFreq: 8600,
+      clickLevel: 0.12,
+      clickDur: 0.006,
+      level: 0.43,
+      waveX: 0.35,
+      waveY: 0.48
     }
   ],
 
   sub: [
     {
-      name: 'Fat Moog Saw Bass',
-      desc: 'Basse dent de scie grasse et filtrée',
+      name: 'Moog Acid Bass',
+      desc: 'Basse analogique agressive avec résonance prononcée et filtre qui mord',
       wave: 'sawtooth',
-      cutoff: 1450,
-      attack: 0.012,
-      resonance: 5,
-      level: 0.48,
-      waveX: 0.58,
-      waveY: 0.45
+      cutoff: 1750,
+      attack: 0.006,
+      resonance: 8.5,
+      level: 0.52,
+      harmonicLevel: 0.9,
+      subLevel: 0.72,
+      drive: 0.34,
+      filterEnv: 0.7,
+      filterAttack: 0.008,
+      filterDecay: 0.22,
+      decay: 0.5,
+      waveX: 0.62,
+      waveY: 0.58
     },
     {
-      name: 'Deep Moog Sub',
-      desc: 'Basse ronde et profonde avec filtre très fermé',
-      wave: 'sawtooth',
-      cutoff: 620,
-      attack: 0.018,
-      resonance: 4,
-      level: 0.58,
-      waveX: 0.2,
-      waveY: 0.78
+      name: 'Deep Tape Sub',
+      desc: 'Sub très rond, sombre et presque sinusoïdal avec énorme fondation grave',
+      wave: 'sine',
+      cutoff: 520,
+      attack: 0.022,
+      resonance: 1.5,
+      level: 0.68,
+      harmonicLevel: 0.18,
+      subLevel: 1.0,
+      drive: 0.08,
+      filterEnv: 0.15,
+      filterAttack: 0.02,
+      filterDecay: 0.38,
+      decay: 0.72,
+      waveX: 0.05,
+      waveY: 0.88
     },
     {
-      name: 'Rubber Synth Bass',
-      desc: 'Basse souple et rebondissante avec attaque courte',
+      name: 'Rubber Square Bass',
+      desc: 'Basse carrée élastique, sèche et bondissante avec médiums très présents',
       wave: 'square',
-      cutoff: 1850,
-      attack: 0.004,
-      resonance: 3,
-      level: 0.43,
-      waveX: 0.72,
-      waveY: 0.3
+      cutoff: 2100,
+      attack: 0.002,
+      resonance: 4.2,
+      level: 0.46,
+      harmonicLevel: 0.82,
+      subLevel: 0.55,
+      drive: 0.22,
+      filterEnv: 0.55,
+      filterAttack: 0.002,
+      filterDecay: 0.16,
+      decay: 0.3,
+      waveX: 0.74,
+      waveY: 0.34
     },
     {
-      name: 'Warm Juno Bass',
-      desc: 'Basse analogique douce et légèrement brillante',
+      name: 'Juno Rubber Bass',
+      desc: 'Basse analogique douce mais épaisse avec mouvement de filtre et grave velouté',
       wave: 'triangle',
-      cutoff: 2300,
-      attack: 0.015,
-      resonance: 6,
-      level: 0.5,
-      waveX: 0.4,
-      waveY: 0.52
+      cutoff: 1250,
+      attack: 0.012,
+      resonance: 5.8,
+      level: 0.55,
+      harmonicLevel: 0.65,
+      subLevel: 0.88,
+      drive: 0.16,
+      filterEnv: 0.42,
+      filterAttack: 0.012,
+      filterDecay: 0.32,
+      decay: 0.58,
+      waveX: 0.38,
+      waveY: 0.62
     }
   ],
 
   kalimba: [
-    {
-      name: 'Wood Block Perc',
-      desc: 'Percussion bois percutante et sèche',
-      wave: 'square',
-      harmonicRatio: 2.4,
-      decay: 0.075,
-      noiseAmt: 0.22,
-      level: 0.48,
-      waveX: 0.62,
-      waveY: 0.12
-    },
-    {
-      name: 'Soft Kalimba',
-      desc: 'Lamelles boisées douces et rondes',
-      wave: 'sine',
-      harmonicRatio: 1.0,
-      decay: 0.24,
-      noiseAmt: 0.025,
-      level: 0.56,
-      waveX: 0.12,
-      waveY: 0.25
-    },
-    {
-      name: 'Bright Thumb Piano',
-      desc: 'Kalimba claire avec attaque légèrement métallique',
-      wave: 'triangle',
-      harmonicRatio: 2.7,
-      decay: 0.3,
-      noiseAmt: 0.08,
-      level: 0.49,
-      waveX: 0.58,
-      waveY: 0.58
-    },
-    {
-      name: 'Deep Wooden Tines',
-      desc: 'Lamelles graves avec résonance chaleureuse',
-      wave: 'sine',
-      harmonicRatio: 0.68,
-      decay: 0.7,
-      noiseAmt: 0.018,
-      level: 0.52,
-      waveX: 0.24,
-      waveY: 0.82
-    }
-  ],
+  {
+    name: 'Tight Wood Block',
+    desc: 'Bloc de bois sec, claquant et très court, avec un transitoire net',
+    type: 'wood',
+    harmonicRatio: 2.62,
+    secondaryRatio: 4.17,
+    decay: 0.075,
+    attack: 0.0003,
+    noiseAmt: 0.16,
+    noiseDur: 0.012,
+    bodyLevel: 0.72,
+    secondaryLevel: 0.18,
+    level: 0.62,
+    waveX: 0.62,
+    waveY: 0.16
+  },
+
+  {
+    name: 'Natural Kalimba',
+    desc: 'Kalimba organique avec attaque de lamelle, résonance douce et harmonique brillante',
+    type: 'kalimba',
+    harmonicRatio: 2.01,
+    secondaryRatio: 3.97,
+    decay: 0.42,
+    attack: 0.0008,
+    noiseAmt: 0.055,
+    noiseDur: 0.018,
+    bodyLevel: 0.66,
+    secondaryLevel: 0.34,
+    level: 0.64,
+    waveX: 0.18,
+    waveY: 0.48
+  },
+
+  {
+    name: 'Metal Tine Perc',
+    desc: 'Lamelle métallique frappée, brillante, tendue et résonante',
+    type: 'metal',
+    harmonicRatio: 3.17,
+    secondaryRatio: 6.43,
+    decay: 0.58,
+    attack: 0.0002,
+    noiseAmt: 0.11,
+    noiseDur: 0.009,
+    bodyLevel: 0.58,
+    secondaryLevel: 0.42,
+    level: 0.53,
+    waveX: 0.76,
+    waveY: 0.78
+  },
+
+  {
+    name: 'Deep Hollow Perc',
+    desc: 'Percussion boisée grave et creuse avec une résonance sombre',
+    type: 'hollow',
+    harmonicRatio: 1.47,
+    secondaryRatio: 2.93,
+    decay: 0.72,
+    attack: 0.0012,
+    noiseAmt: 0.025,
+    noiseDur: 0.022,
+    bodyLevel: 0.78,
+    secondaryLevel: 0.22,
+    level: 0.68,
+    waveX: 0.28,
+    waveY: 0.68
+  }
+],
 
   pluck: [
-    {
-      name: 'FM Psych Guitar',
-      desc: 'Pluck métallique type sitar et guitare FM',
-      wave: 'sawtooth',
-      fmRatio: 3.7,
-      fmMod: 4.8,
-      level: 0.42,
-      waveX: 0.82,
-      waveY: 0.82
-    },
-    {
-      name: 'Nylon Guitar Pluck',
-      desc: 'Corde nylon douce avec attaque naturelle',
-      wave: 'sine',
-      fmRatio: 1.0,
-      fmMod: 0.12,
-      level: 0.56,
-      waveX: 0.08,
-      waveY: 0.16
-    },
-    {
-      name: 'Electric Pluck',
-      desc: 'Corde électrique brillante et courte',
-      wave: 'triangle',
-      fmRatio: 2.0,
-      fmMod: 1.2,
-      level: 0.5,
-      waveX: 0.58,
-      waveY: 0.38
-    },
-    {
-      name: 'Glass Pluck',
-      desc: 'Pluck cristallin avec une belle brillance FM',
-      wave: 'sine',
-      fmRatio: 4.2,
-      fmMod: 3.5,
-      level: 0.43,
-      waveX: 0.9,
-      waveY: 0.62
-    }
-  ],
+  {
+    name: 'Nylon Finger Pluck',
+    desc: 'Corde nylon douce, ronde, mate et naturelle avec une attaque discrète',
+    type: 'nylon',
+    fmRatio: 1.01,
+    fmMod: 0.16,
+    decay: 0.42,
+    attack: 0.0008,
+    bodyLevel: 0.78,
+    harmonicLevel: 0.16,
+    noiseAmt: 0.035,
+    noiseDur: 0.012,
+    level: 0.62,
+    waveX: 0.08,
+    waveY: 0.18
+  },
+
+  {
+    name: 'Jangle Electric',
+    desc: 'Corde électrique brillante avec attaque métallique et résonance courte',
+    type: 'electric',
+    fmRatio: 2.03,
+    fmMod: 1.35,
+    decay: 0.34,
+    attack: 0.00025,
+    bodyLevel: 0.66,
+    harmonicLevel: 0.32,
+    noiseAmt: 0.075,
+    noiseDur: 0.008,
+    level: 0.57,
+    waveX: 0.58,
+    waveY: 0.62
+  },
+
+  {
+    name: 'Glass FM Pluck',
+    desc: 'Pluck cristallin très brillant avec attaque dure et partiels métalliques',
+    type: 'glass',
+    fmRatio: 5.17,
+    fmMod: 4.8,
+    decay: 0.52,
+    attack: 0.0001,
+    bodyLevel: 0.48,
+    harmonicLevel: 0.46,
+    noiseAmt: 0.09,
+    noiseDur: 0.006,
+    level: 0.49,
+    waveX: 0.82,
+    waveY: 0.9
+  },
+
+  {
+    name: 'Muted Sitar Pluck',
+    desc: 'Corde pincée sèche et nasale avec résonance harmonique irrégulière',
+    type: 'sitar',
+    fmRatio: 3.47,
+    fmMod: 2.7,
+    decay: 0.27,
+    attack: 0.00015,
+    bodyLevel: 0.7,
+    harmonicLevel: 0.3,
+    noiseAmt: 0.13,
+    noiseDur: 0.009,
+    level: 0.54,
+    waveX: 0.7,
+    waveY: 0.48
+  }
+],
 
   rhodes: [
-    {
-      name: 'Warm Chorus Rhodes',
-      desc: 'Piano Rhodes chaud avec chorus',
-      wave: 'triangle',
-      tineRatio: 2.0,
-      tineVol: 0.3,
-      release: 0.85,
-      level: 0.48,
-      waveX: 0.32,
-      waveY: 0.5
-    },
-    {
-      name: 'Classic Suitcase Rhodes',
-      desc: 'Rhodes rond et velouté façon suitcase',
-      wave: 'sine',
-      tineRatio: 2.2,
-      tineVol: 0.18,
-      release: 0.95,
-      level: 0.54,
-      waveX: 0.2,
-      waveY: 0.42
-    },
-    {
-      name: 'Bright Tine Rhodes',
-      desc: 'Rhodes plus brillant avec attaque métallique',
-      wave: 'triangle',
-      tineRatio: 5.2,
-      tineVol: 0.58,
-      release: 0.6,
-      level: 0.43,
-      waveX: 0.72,
-      waveY: 0.3
-    },
-    {
-      name: 'Dirty Rhodes Amp',
-      desc: 'Rhodes chaud légèrement poussé dans un ampli',
-      wave: 'sawtooth',
-      tineRatio: 3.0,
-      tineVol: 0.5,
-      release: 0.7,
-      level: 0.38,
-      waveX: 0.68,
-      waveY: 0.72
-    }
-  ],
+  {
+    name: 'Vintage Suitcase',
+    desc: 'Rhodes chaud et velouté, attaque ronde, tine discrète et longue résonance',
+    type: 'suitcase',
+    tineRatio: 2.01,
+    tineVol: 0.22,
+    tineAttack: 0.002,
+    tineDecay: 0.16,
+    bodyLevel: 0.82,
+    release: 1.25,
+    cutoff: 4200,
+    resonance: 1.2,
+    level: 0.58,
+    waveX: 0.18,
+    waveY: 0.34
+  },
+
+  {
+    name: 'Hard Tine Rhodes',
+    desc: 'Rhodes claquant avec tine métallique très présente et attaque incisive',
+    type: 'hard',
+    tineRatio: 5.03,
+    tineVol: 0.72,
+    tineAttack: 0.00015,
+    tineDecay: 0.07,
+    bodyLevel: 0.58,
+    release: 0.7,
+    cutoff: 7600,
+    resonance: 2.8,
+    level: 0.52,
+    waveX: 0.74,
+    waveY: 0.72
+  },
+
+  {
+    name: 'Dream Chorus Rhodes',
+    desc: 'Rhodes large et flottant avec deux couches légèrement désaccordées',
+    type: 'chorus',
+    tineRatio: 3.01,
+    tineVol: 0.38,
+    tineAttack: 0.001,
+    tineDecay: 0.11,
+    bodyLevel: 0.68,
+    release: 1.45,
+    cutoff: 5200,
+    resonance: 1.5,
+    detune: 7,
+    level: 0.48,
+    waveX: 0.42,
+    waveY: 0.58
+  },
+
+  {
+    name: 'Dirty Stage Rhodes',
+    desc: 'Rhodes de scène légèrement saturé, médium agressif et tine granuleuse',
+    type: 'dirty',
+    tineRatio: 4.27,
+    tineVol: 0.64,
+    tineAttack: 0.0003,
+    tineDecay: 0.055,
+    bodyLevel: 0.62,
+    release: 0.82,
+    cutoff: 6100,
+    resonance: 4.2,
+    drive: 0.22,
+    level: 0.46,
+    waveX: 0.62,
+    waveY: 0.76
+  }
+],
 
   brass: [
-    {
-      name: 'Brass Synth 80s',
-      desc: 'Cuivres synthétiques ouverts et puissants',
-      wave: 'sawtooth',
-      detune: 12,
-      attack: 0.035,
-      level: 0.43,
-      waveX: 0.58,
-      waveY: 0.62
-    },
-    {
-      name: 'Soft Synth Horn',
-      desc: 'Cuivre chaud et rond avec attaque progressive',
-      wave: 'triangle',
-      detune: 5,
-      attack: 0.09,
-      level: 0.5,
-      waveX: 0.25,
-      waveY: 0.3
-    },
-    {
-      name: 'Bright Trumpet Synth',
-      desc: 'Trompette synthétique claire et expressive',
-      wave: 'square',
-      detune: 7,
-      attack: 0.008,
-      level: 0.42,
-      waveX: 0.78,
-      waveY: 0.22
-    },
-    {
-      name: 'Warm Brass Chord',
-      desc: 'Cuivres larges et chaleureux pour accords',
-      wave: 'sawtooth',
-      detune: 16,
-      attack: 0.06,
-      level: 0.37,
-      waveX: 0.45,
-      waveY: 0.7
-    }
-  ],
+  {
+    name: 'Neon Brass Section',
+    desc: 'Section de cuivres synthétiques façon années 80, brillante et compacte',
+    type: 'section',
+    detune: 11,
+    secondDetune: -8,
+    attack: 0.018,
+    release: 0.32,
+    cutoffStart: 850,
+    cutoffEnd: 6200,
+    resonance: 2.4,
+    bodyLevel: 0.72,
+    secondLevel: 0.48,
+    breathLevel: 0.055,
+    breathDur: 0.08,
+    level: 0.54,
+    waveX: 0.62,
+    waveY: 0.62
+  },
+
+  {
+    name: 'Bright Trumpet',
+    desc: 'Trompette synthétique tendue, nasale et agressive avec attaque franche',
+    type: 'trumpet',
+    detune: 6,
+    secondDetune: 13,
+    attack: 0.006,
+    release: 0.24,
+    cutoffStart: 1800,
+    cutoffEnd: 8200,
+    resonance: 3.8,
+    bodyLevel: 0.68,
+    secondLevel: 0.36,
+    breathLevel: 0.025,
+    breathDur: 0.035,
+    level: 0.51,
+    waveX: 0.82,
+    waveY: 0.76
+  },
+
+  {
+    name: 'Warm Muted Horn',
+    desc: 'Cuivre feutré et chaud, plus sombre, avec attaque lente et médiums ronds',
+    type: 'muted',
+    detune: 4,
+    secondDetune: -3,
+    attack: 0.075,
+    release: 0.46,
+    cutoffStart: 500,
+    cutoffEnd: 2700,
+    resonance: 1.8,
+    bodyLevel: 0.78,
+    secondLevel: 0.22,
+    breathLevel: 0.08,
+    breathDur: 0.12,
+    level: 0.58,
+    waveX: 0.28,
+    waveY: 0.32
+  },
+
+  {
+    name: 'Massive Synth Brass',
+    desc: 'Brass synth épais et puissant avec deux couches désaccordées et ouverture de filtre',
+    type: 'massive',
+    detune: 17,
+    secondDetune: -14,
+    attack: 0.028,
+    release: 0.58,
+    cutoffStart: 700,
+    cutoffEnd: 7600,
+    resonance: 4.6,
+    bodyLevel: 0.76,
+    secondLevel: 0.58,
+    breathLevel: 0.035,
+    breathDur: 0.06,
+    level: 0.50,
+    waveX: 0.54,
+    waveY: 0.84
+  }
+],
 
   bell: [
-    {
-      name: 'FM Crystal Bells',
-      desc: 'Cloches FM brillantes et cristallines',
-      wave: 'sine',
-      fmRatio: 2.75,
-      modDepth: 3.8,
-      decayMult: 2.4,
-      level: 0.43,
-      waveX: 0.18,
-      waveY: 0.34
-    },
-    {
-      name: 'Soft Bronze Bell',
-      desc: 'Cloche chaude avec une longue résonance',
-      wave: 'sine',
-      fmRatio: 1.45,
-      modDepth: 1.4,
-      decayMult: 3.4,
-      level: 0.48,
-      waveX: 0.18,
-      waveY: 0.68
-    },
-    {
-      name: 'Music Box Bell',
-      desc: 'Petite cloche de boîte à musique délicate',
-      wave: 'triangle',
-      fmRatio: 4.1,
-      modDepth: 1.0,
-      decayMult: 0.75,
-      level: 0.45,
-      waveX: 0.48,
-      waveY: 0.08
-    },
-    {
-      name: 'Metallic Bell',
-      desc: 'Cloche métallique claire avec attaque précise',
-      wave: 'triangle',
-      fmRatio: 5.8,
-      modDepth: 5.0,
-      decayMult: 1.4,
-      level: 0.38,
-      waveX: 0.84,
-      waveY: 0.72
-    }
-  ],
+  {
+    name: 'FM Crystal Bell',
+    desc: 'Cloche cristalline très brillante, attaque nette et résonance longue',
+    type: 'crystal',
+    fmRatio: 2.71,
+    modDepth: 5.8,
+    decayMult: 2.8,
+    attack: 0.0008,
+    harmonicLevel: 0.42,
+    highLevel: 0.24,
+    highRatio: 5.43,
+    highDecay: 0.55,
+    level: 0.44,
+    waveX: 0.16,
+    waveY: 0.88
+  },
+
+  {
+    name: 'Warm Bronze Bell',
+    desc: 'Cloche bronze sombre et ronde avec une longue queue chaleureuse',
+    type: 'bronze',
+    fmRatio: 1.47,
+    modDepth: 1.65,
+    decayMult: 4.2,
+    attack: 0.0015,
+    harmonicLevel: 0.58,
+    highLevel: 0.10,
+    highRatio: 3.91,
+    highDecay: 1.8,
+    level: 0.48,
+    waveX: 0.05,
+    waveY: 0.42
+  },
+
+  {
+    name: 'Music Box Bell',
+    desc: 'Petite cloche de boîte à musique sèche, fine et délicate',
+    type: 'musicbox',
+    fmRatio: 3.98,
+    modDepth: 2.2,
+    decayMult: 1.15,
+    attack: 0.0003,
+    harmonicLevel: 0.48,
+    highLevel: 0.32,
+    highRatio: 8.02,
+    highDecay: 0.35,
+    level: 0.43,
+    waveX: 0.42,
+    waveY: 0.18
+  },
+
+  {
+    name: 'Dark Tubular Bell',
+    desc: 'Grande cloche tubulaire grave, profonde et résonnante',
+    type: 'tubular',
+    fmRatio: 1.98,
+    modDepth: 1.15,
+    decayMult: 5.5,
+    attack: 0.002,
+    harmonicLevel: 0.72,
+    highLevel: 0.07,
+    highRatio: 2.98,
+    highDecay: 2.6,
+    level: 0.40,
+    waveX: 0.30,
+    waveY: 0.30
+  }
+],
 
   flute: [
-    {
-      name: 'Breath Tape Flute',
-      desc: 'Flûte avec souffle de bande et vibrato',
-      wave: 'sine',
-      vibratoFreq: 3.0,
-      noiseAmt: 0.28,
-      level: 0.5,
-      waveX: 0.24,
-      waveY: 0.52
-    },
-    {
-      name: 'Warm Bamboo Flute',
-      desc: 'Flûte ronde et naturelle avec peu de souffle',
-      wave: 'sine',
-      vibratoFreq: 2.1,
-      noiseAmt: 0.07,
-      level: 0.55,
-      waveX: 0.08,
-      waveY: 0.22
-    },
-    {
-      name: 'Airy Wooden Flute',
-      desc: 'Flûte douce riche en air et en texture',
-      wave: 'triangle',
-      vibratoFreq: 3.7,
-      noiseAmt: 0.38,
-      level: 0.44,
-      waveX: 0.38,
-      waveY: 0.62
-    },
-    {
-      name: 'Soft Synth Whistle',
-      desc: 'Sifflement synthétique léger avec vibrato',
-      wave: 'triangle',
-      vibratoFreq: 5.5,
-      noiseAmt: 0.04,
-      level: 0.47,
-      waveX: 0.72,
-      waveY: 0.38
-    }
-  ],
+  {
+    name: 'Warm Bamboo Flute',
+    desc: 'Flûte bambou organique, chaude et boisée avec souffle irrégulier',
+    type: 'bamboo',
+    vibratoFreq: 2.35,
+    vibratoDepth: 0.012,
+    noiseAmt: 0.13,
+    noiseFreqRatio: 2.8,
+    noiseQ: 1.2,
+    attack: 0.055,
+    release: 0.42,
+    bodyLevel: 0.78,
+    breathLevel: 0.22,
+    breathAttack: 0.018,
+    breathDecay: 0.16,
+    cutoff: 3600,
+    resonance: 0.8,
+    level: 0.56,
+    waveX: 0.08,
+    waveY: 0.34
+  },
+
+  {
+    name: 'Silver Concert Flute',
+    desc: 'Flûte traversière claire et précise, souffle fin et aigu avec vibrato naturel',
+    type: 'concert',
+    vibratoFreq: 5.1,
+    vibratoDepth: 0.018,
+    noiseAmt: 0.19,
+    noiseFreqRatio: 4.8,
+    noiseQ: 2.4,
+    attack: 0.018,
+    release: 0.3,
+    bodyLevel: 0.72,
+    breathLevel: 0.3,
+    breathAttack: 0.012,
+    breathDecay: 0.11,
+    cutoff: 8200,
+    resonance: 1.5,
+    level: 0.50,
+    waveX: 0.32,
+    waveY: 0.72
+  },
+
+  {
+    name: 'Dream Air Flute',
+    desc: 'Flûte flottante et douce avec souffle large, vibrato lent et texture presque synthétique',
+    type: 'air',
+    vibratoFreq: 3.15,
+    vibratoDepth: 0.026,
+    noiseAmt: 0.34,
+    noiseFreqRatio: 3.5,
+    noiseQ: 0.7,
+    attack: 0.09,
+    release: 0.8,
+    bodyLevel: 0.58,
+    breathLevel: 0.42,
+    breathAttack: 0.035,
+    breathDecay: 0.3,
+    cutoff: 6200,
+    resonance: 0.5,
+    level: 0.42,
+    waveX: 0.22,
+    waveY: 0.86
+  },
+
+  {
+    name: 'Raw Wooden Flute',
+    desc: 'Flûte boisée brute et nasale, souffle granuleux et attaque expressive',
+    type: 'wood',
+    vibratoFreq: 4.0,
+    vibratoDepth: 0.009,
+    noiseAmt: 0.27,
+    noiseFreqRatio: 2.2,
+    noiseQ: 1.8,
+    attack: 0.028,
+    release: 0.52,
+    bodyLevel: 0.68,
+    breathLevel: 0.34,
+    breathAttack: 0.009,
+    breathDecay: 0.13,
+    cutoff: 4400,
+    resonance: 2.2,
+    level: 0.48,
+    waveX: 0.42,
+    waveY: 0.55
+  }
+],
 
   pad: [
-    {
-      name: 'Stereo Warm Pad',
-      desc: 'Nappe ultra-large en chorus',
-      wave: 'triangle',
-      detune: 8,
-      cutoff: 2600,
-      attack: 0.38,
-      level: 0.34,
-      waveX: 0.35,
-      waveY: 0.55
-    },
-    {
-      name: 'Soft Analog Pad',
-      desc: 'Nappe douce et chaude avec filtre fermé',
-      wave: 'sine',
-      detune: 3,
-      cutoff: 900,
-      attack: 0.8,
-      level: 0.43,
-      waveX: 0.08,
-      waveY: 0.18
-    },
-    {
-      name: 'Dreamy Juno Pad',
-      desc: 'Nappe analogique large et légèrement brillante',
-      wave: 'sawtooth',
-      detune: 10,
-      cutoff: 3400,
-      attack: 0.5,
-      level: 0.31,
-      waveX: 0.55,
-      waveY: 0.52
-    },
-    {
-      name: 'Glass Air Pad',
-      desc: 'Nappe aérienne et lumineuse avec beaucoup d’espace',
-      wave: 'triangle',
-      detune: 14,
-      cutoff: 5600,
-      attack: 0.65,
-      level: 0.28,
-      waveX: 0.86,
-      waveY: 0.72
-    }
-  ]
+  {
+    name: 'Juno Velvet Pad',
+    desc: 'Nappe analogique dense et chaude, large, douce et légèrement chorussée',
+    type: 'juno',
+    wave: 'sawtooth',
+    detune: 7,
+    detune2: 13,
+    cutoff: 2200,
+    resonance: 2.8,
+    attack: 0.42,
+    release: 1.7,
+    filterAttack: 0.55,
+    filterRelease: 1.2,
+    level: 0.34,
+    waveX: 0.58,
+    waveY: 0.46
+  },
+
+  {
+    name: 'Eno Tape Cloud',
+    desc: 'Nappe flottante et organique avec une attaque lente, une couleur de bande et beaucoup d’air',
+    type: 'tape',
+    wave: 'triangle',
+    detune: 4,
+    detune2: 9,
+    cutoff: 3400,
+    resonance: 1.2,
+    attack: 1.15,
+    release: 2.8,
+    filterAttack: 1.4,
+    filterRelease: 2.2,
+    noiseAmt: 0.035,
+    level: 0.28,
+    waveX: 0.34,
+    waveY: 0.68
+  },
+
+  {
+    name: 'Daft Poly Pad',
+    desc: 'Pad synthétique polyphonique brillant, épais et légèrement agressif',
+    type: 'poly',
+    wave: 'sawtooth',
+    detune: 11,
+    detune2: 19,
+    cutoff: 4100,
+    resonance: 4.5,
+    attack: 0.18,
+    release: 1.15,
+    filterAttack: 0.22,
+    filterRelease: 0.75,
+    level: 0.31,
+    waveX: 0.72,
+    waveY: 0.72
+  },
+
+  {
+    name: 'Glass Horizon',
+    desc: 'Nappe cristalline froide et scintillante, presque numérique, avec des harmoniques métalliques',
+    type: 'glass',
+    wave: 'sine',
+    detune: 23,
+    detune2: 41,
+    cutoff: 9200,
+    resonance: 3.6,
+    attack: 0.22,
+    release: 2.4,
+    filterAttack: 0.16,
+    filterRelease: 1.8,
+    noiseAmt: 0.006,
+    level: 0.22,
+    waveX: 0.12,
+    waveY: 0.98
+  }
+]
 };
 
 // Initialisation des instruments
@@ -532,14 +932,15 @@ let duplicateCount = 0;
 
 const LABELS = ['La', 'La#', 'Si', 'Do', 'Do#', 'Ré', 'Ré#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#'];
 
-const NOTES = Array.from({ length: 36 }, (_, id) => {
-  const noteIndex = (id + 2) % 12;
-  const octave = Math.floor((id + 2) / 12) + 2;
+const NOTES = Array.from({ length: 84 }, (_, id) => {
+  const noteIndex = id % 12;
+  const octave = Math.floor(id / 12) + 1;
+
   return {
     id,
     name: `${LABELS[noteIndex]}${octave}`,
     black: LABELS[noteIndex].includes('#'),
-    freq: 61.735 * (2 ** (id / 12))
+    freq: 32.7032 * (2 ** (id / 12))
   };
 }).reverse();
 
@@ -656,19 +1057,108 @@ const DEFAULT_NOTE_INDEX = DO3_INDEX !== -1 ? DO3_INDEX : Math.floor(NOTES.lengt
 
 // 3. Application du motif initial
 [
-  [0, KICK_DEFAULT_INDEX, [0, 8, 16, 24, 32, 40, 48, 56]],
-  [1, DEFAULT_NOTE_INDEX, [8, 24, 40, 56]],
-  [2, DEFAULT_NOTE_INDEX, [
-    0, 2, 4, 6, 8, 10, 12, 14,
-    16, 18, 20, 22, 24, 26, 28, 30,
-    32, 34, 36, 38, 40, 42, 44, 46,
-    48, 50, 52, 54, 56, 58, 60, 62
+  [0, KICK_DEFAULT_INDEX, [
+    , 16, 32, 48
   ]],
-  [3, BASS_DEFAULT_INDEX, [0, 6, 12, 16, 22, 28, 32, 38, 44, 48, 54, 60]],
-  [4, DEFAULT_NOTE_INDEX - 2, [4, 12, 20, 28, 36, 44, 52, 60]],
-  [5, DEFAULT_NOTE_INDEX - 4, [0, 6, 10, 16, 22, 26, 32, 38, 42, 48, 54, 58]],
-  [6, DEFAULT_NOTE_INDEX - 5, [0, 14, 16, 30, 32, 46, 48, 62]]
-].forEach(([instIndex, noteIndex, steps]) => {
+
+  [1, DEFAULT_NOTE_INDEX + 3, [
+    16, 48
+  ]],
+
+  [2, DEFAULT_NOTE_INDEX + 9, [
+    4, 12, 20, 28, 36, 44, 52, 60
+  ]],
+
+  [3, BASS_DEFAULT_INDEX, [
+    0, 10, 16, 27, 32, 42, 48, 59
+  ]],
+
+  [3, BASS_DEFAULT_INDEX + 3, [
+    14, 30, 46
+  ]],
+
+  [3, BASS_DEFAULT_INDEX + 7, [
+    23, 55
+  ]],
+
+  [4, DEFAULT_NOTE_INDEX, [
+    0
+  ]],
+
+  [4, DEFAULT_NOTE_INDEX + 3, [
+    0
+  ]],
+
+  [4, DEFAULT_NOTE_INDEX + 7, [
+    0
+  ]],
+
+  [5, DEFAULT_NOTE_INDEX + 10, [
+    7, 23, 39, 55
+  ]],
+
+  [7, DEFAULT_NOTE_INDEX + 8, [
+    12, 28, 44, 60
+  ]],
+
+  [8, DEFAULT_NOTE_INDEX + 7, [
+    3, 19, 35, 51
+  ]],
+
+  [9, DEFAULT_NOTE_INDEX + 12, [
+    14, 46
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX, [
+    0
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 3, [
+    0
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 7, [
+    0
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 8, [
+    16
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 11, [
+    16
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 15, [
+    16
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 3, [
+    32
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 7, [
+    32
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 10, [
+    32
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 7, [
+    48
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 10, [
+    48
+  ]],
+
+  [10, DEFAULT_NOTE_INDEX + 14, [
+    48
+  ]]
+]
+
+.forEach(([instIndex, noteIndex, steps]) => {
   const instId = INSTRUMENTS[instIndex]?.id;
 
   if (
@@ -979,20 +1469,20 @@ function startAutoLevel(leveler, time, duration) {
 
 function getPresetOutputLevel(inst, preset) {
   const baseLevels = {
-    kick:    0.85,
-    snare:   0.34,
-    hat:     0.40,
-    sub:     0.32,
-    kalimba: 0.34,
-    pluck:   0.30,
-    rhodes:  0.28,
-    brass:   0.25,
-    bell:    0.28,
-    flute:   0.30,
-    pad:     0.20
+    kick:    0.58,
+    snare:   0.72,
+    hat:     0.78,
+    sub:     0.68,
+    kalimba: 0.74,
+    pluck:   0.76,
+    rhodes:  0.82,
+    brass:   0.78,
+    bell:    0.82,
+    flute:   0.86,
+    pad:     0.92
   };
 
-  const base = baseLevels[inst.voice] ?? 0.30;
+  const base = baseLevels[inst.voice] ?? 0.75;
   const presetLevel = preset.level ?? 0.5;
   const levelFactor = presetLevel * 2.0;
 
@@ -1033,96 +1523,686 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
   // 1. KICK (Fréquence basée sur le pitch de la note)
   if (inst.voice === 'kick') {
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-    const drive = audio.createWaveShaper();
+  const type = preset.type || 'punch';
 
-    const k = (preset.drive || (0.1 + wy * 0.4)) * 20;
-    const curve = new Float32Array(44100);
-    for (let i = 0; i < 44100; i++) {
-      let x = (i * 2) / 44100 - 1;
-      curve[i] = ((3 + k) * x * 20 * (Math.PI / 180)) / (Math.PI + k * Math.abs(x));
-    }
-    drive.curve = curve;
+  const body = audio.createOscillator();
+  const bodyGain = audio.createGain();
+  const drive = audio.createWaveShaper();
 
-    osc.type = waveType;
-    const startF = freq * 2.5;
-    const subF = freq * 0.75;
+  const startFreq = Math.max(25, freq * (preset.startRatio ?? 5));
+  const endFreq = Math.max(20, freq * (preset.endRatio ?? 0.8));
 
-    osc.frequency.setValueAtTime(startF, time);
-    osc.frequency.exponentialRampToValueAtTime(subF, time + (preset.dur || 0.15));
+  const bodyDur = preset.bodyDur ?? 0.25;
+  const pitchDrop = preset.pitchDrop ?? 0.06;
 
-    const dur = preset.dur || 0.2;
-    gain.gain.setValueAtTime(finalLevel * 1.8, time);
-    gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
+  const bodyLevel = preset.bodyLevel ?? 1;
+  const driveAmount = preset.drive ?? 0.3;
 
-    osc.connect(drive);
-    drive.connect(gain);
-    gain.connect(out);
+  const curve = new Float32Array(44100);
 
-    osc.start(time);
-    osc.stop(time + dur + 0.01);
+  for (let i = 0; i < curve.length; i++) {
+    const x = (i * 2) / curve.length - 1;
+    curve[i] =
+      ((1 + driveAmount * 14) * x) /
+      (1 + driveAmount * 14 * Math.abs(x));
+  }
+
+  drive.curve = curve;
+  drive.oversample = '4x';
+
+  if (type === '808') {
+    body.type = 'sine';
+
+    body.frequency.setValueAtTime(startFreq, time);
+
+    body.frequency.exponentialRampToValueAtTime(
+      endFreq,
+      time + pitchDrop
+    );
+
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(20, endFreq * 0.96),
+      time + bodyDur
+    );
+
+    envelope(
+      bodyGain,
+      finalLevel * bodyLevel,
+      time,
+      preset.attack ?? 0.001,
+      preset.decay ?? bodyDur
+    );
+
+    body.connect(drive);
+    drive.connect(bodyGain);
+    bodyGain.connect(out);
+
+    const click = audio.createOscillator();
+    const clickGain = audio.createGain();
+
+    const clickFreq = Math.min(
+      audio.sampleRate * 0.45,
+      Math.max(300, freq * (preset.clickRatio ?? 15))
+    );
+
+    click.type = 'triangle';
+    click.frequency.setValueAtTime(clickFreq, time);
+    click.frequency.exponentialRampToValueAtTime(
+      Math.max(80, clickFreq * 0.3),
+      time + (preset.clickDur ?? 0.007)
+    );
+
+    envelope(
+      clickGain,
+      finalLevel * (preset.clickLevel ?? 0.15),
+      time,
+      0.00015,
+      preset.clickDur ?? 0.007
+    );
+
+    click.connect(clickGain);
+    clickGain.connect(out);
+
+    click.start(time);
+    click.stop(time + (preset.clickDur ?? 0.007) + 0.005);
+
+    body.start(time);
+    body.stop(time + bodyDur + 0.06);
+
     return;
   }
+
+  if (type === 'techno') {
+    body.type = 'square';
+
+    body.frequency.setValueAtTime(startFreq, time);
+
+    body.frequency.exponentialRampToValueAtTime(
+      endFreq,
+      time + pitchDrop
+    );
+
+    envelope(
+      bodyGain,
+      finalLevel * bodyLevel,
+      time,
+      preset.attack ?? 0.0002,
+      preset.decay ?? bodyDur
+    );
+
+    body.connect(drive);
+    drive.connect(bodyGain);
+    bodyGain.connect(out);
+
+    const click = audio.createOscillator();
+    const clickGain = audio.createGain();
+    const clickFilter = audio.createBiquadFilter();
+
+    const clickFreq = Math.min(
+      audio.sampleRate * 0.45,
+      Math.max(500, freq * (preset.clickRatio ?? 42))
+    );
+
+    click.type = 'triangle';
+    click.frequency.setValueAtTime(clickFreq, time);
+    click.frequency.exponentialRampToValueAtTime(
+      Math.max(300, clickFreq * 0.22),
+      time + (preset.clickDur ?? 0.0045)
+    );
+
+    clickFilter.type = 'highpass';
+    clickFilter.frequency.setValueAtTime(
+      Math.max(700, freq * 8),
+      time
+    );
+
+    envelope(
+      clickGain,
+      finalLevel * (preset.clickLevel ?? 0.85),
+      time,
+      0.0001,
+      preset.clickDur ?? 0.0045
+    );
+
+    click.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(out);
+
+    click.start(time);
+    click.stop(time + (preset.clickDur ?? 0.0045) + 0.004);
+
+    body.start(time);
+    body.stop(time + bodyDur + 0.025);
+
+    return;
+  }
+
+  if (type === 'moog') {
+    body.type = 'triangle';
+
+    body.frequency.setValueAtTime(startFreq, time);
+
+    body.frequency.exponentialRampToValueAtTime(
+      endFreq,
+      time + pitchDrop
+    );
+
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(25, endFreq * 0.98),
+      time + bodyDur
+    );
+
+    const lowpass = audio.createBiquadFilter();
+
+    lowpass.type = 'lowpass';
+    lowpass.frequency.setValueAtTime(
+      Math.min(5000, freq * 14),
+      time
+    );
+
+    lowpass.frequency.exponentialRampToValueAtTime(
+      Math.max(180, freq * 2.2),
+      time + Math.min(0.14, bodyDur)
+    );
+
+    lowpass.Q.setValueAtTime(2.4, time);
+
+    envelope(
+      bodyGain,
+      finalLevel * bodyLevel,
+      time,
+      preset.attack ?? 0.0012,
+      preset.decay ?? bodyDur
+    );
+
+    body.connect(lowpass);
+    lowpass.connect(drive);
+    drive.connect(bodyGain);
+    bodyGain.connect(out);
+
+    const knock = audio.createOscillator();
+    const knockGain = audio.createGain();
+
+    const knockFreq = Math.max(
+      120,
+      Math.min(5000, freq * (preset.clickRatio ?? 13))
+    );
+
+    knock.type = 'sine';
+
+    knock.frequency.setValueAtTime(
+      knockFreq,
+      time
+    );
+
+    knock.frequency.exponentialRampToValueAtTime(
+      Math.max(70, freq * 2),
+      time + 0.035
+    );
+
+    envelope(
+      knockGain,
+      finalLevel * (preset.clickLevel ?? 0.28),
+      time,
+      0.0003,
+      preset.clickDur ?? 0.016
+    );
+
+    knock.connect(knockGain);
+    knockGain.connect(out);
+
+    knock.start(time);
+    knock.stop(time + (preset.clickDur ?? 0.016) + 0.008);
+
+    body.start(time);
+    body.stop(time + bodyDur + 0.06);
+
+    return;
+  }
+
+  body.type = waveType;
+
+  body.frequency.setValueAtTime(startFreq, time);
+
+  body.frequency.exponentialRampToValueAtTime(
+    endFreq,
+    time + pitchDrop
+  );
+
+  envelope(
+    bodyGain,
+    finalLevel * bodyLevel,
+    time,
+    preset.attack ?? 0.0005,
+    preset.decay ?? bodyDur
+  );
+
+  body.connect(drive);
+  drive.connect(bodyGain);
+  bodyGain.connect(out);
+
+  const click = audio.createOscillator();
+  const clickGain = audio.createGain();
+  const clickFilter = audio.createBiquadFilter();
+
+  const clickFreq = Math.min(
+    audio.sampleRate * 0.45,
+    Math.max(300, freq * (preset.clickRatio ?? 34))
+  );
+
+  click.type = 'triangle';
+
+  click.frequency.setValueAtTime(
+    clickFreq,
+    time
+  );
+
+  click.frequency.exponentialRampToValueAtTime(
+    Math.max(120, clickFreq * 0.25),
+    time + (preset.clickDur ?? 0.009)
+  );
+
+  clickFilter.type = 'bandpass';
+  clickFilter.frequency.setValueAtTime(
+    clickFreq,
+    time
+  );
+  clickFilter.Q.setValueAtTime(2.8, time);
+
+  envelope(
+    clickGain,
+    finalLevel * (preset.clickLevel ?? 0.75),
+    time,
+    0.0001,
+    preset.clickDur ?? 0.009
+  );
+
+  click.connect(clickFilter);
+  clickFilter.connect(clickGain);
+  clickGain.connect(out);
+
+  click.start(time);
+  click.stop(time + (preset.clickDur ?? 0.009) + 0.005);
+
+  body.start(time);
+  body.stop(time + bodyDur + 0.04);
+
+  return;
+}
 
   // 2. SNARE (Pitch dépendant de la note)
   if (inst.voice === 'snare') {
-    const body = audio.createOscillator();
-    const bodyGain = audio.createGain();
-    body.type = waveType;
-    body.frequency.setValueAtTime(freq, time);
-    body.frequency.exponentialRampToValueAtTime(Math.max(30, freq * 0.4), time + 0.04);
-    
-    envelope(bodyGain, finalLevel * 0.9, time, 0.001, 0.06);
-    body.connect(bodyGain);
-    bodyGain.connect(out);
-    body.start(time);
-    body.stop(time + 0.08);
+  const type = preset.type || 'acoustic';
 
-    const noiseSrc = audio.createBufferSource();
-    const hpFilter = audio.createBiquadFilter();
-    const noiseGain = audio.createGain();
-    
-    const noiseDur = preset.noiseDur || 0.15;
-    noiseSrc.buffer = noise(noiseDur + 0.1);
-    hpFilter.type = 'highpass';
-    hpFilter.frequency.setValueAtTime(cutoffFreq, time);
+  const body = audio.createOscillator();
+  const bodyGain = audio.createGain();
+  const bodyFilter = audio.createBiquadFilter();
 
-    envelope(noiseGain, finalLevel * 0.8, time, 0.001, noiseDur);
-    noiseSrc.connect(hpFilter);
-    hpFilter.connect(noiseGain);
-    noiseGain.connect(out);
-    
-    noiseSrc.start(time);
-    noiseSrc.stop(time + noiseDur + 0.02);
-    return;
+  const bodyRatio = preset.bodyRatio ?? 1;
+  const bodyDropRatio = preset.bodyDropRatio ?? 0.65;
+  const bodyDropTime = preset.bodyDropTime ?? 0.03;
+  const bodyDur = preset.bodyDur ?? 0.14;
+
+  const bodyFreq = Math.max(
+    70,
+    freq * bodyRatio
+  );
+
+  const bodyEndFreq = Math.max(
+    45,
+    freq * bodyDropRatio
+  );
+
+  body.type =
+    type === '909'
+      ? 'triangle'
+      : type === 'crushed'
+        ? 'square'
+        : type === 'vintage'
+          ? 'sine'
+          : 'triangle';
+
+  body.frequency.setValueAtTime(
+    bodyFreq,
+    time
+  );
+
+  body.frequency.exponentialRampToValueAtTime(
+    bodyEndFreq,
+    time + bodyDropTime
+  );
+
+  bodyFilter.type = 'bandpass';
+
+  bodyFilter.frequency.setValueAtTime(
+    Math.max(120, freq * 2.2),
+    time
+  );
+
+  bodyFilter.Q.setValueAtTime(
+    type === 'vintage' ? 1.4 : 2.2,
+    time
+  );
+
+  envelope(
+    bodyGain,
+    finalLevel * (preset.bodyLevel ?? 0.7),
+    time,
+    preset.attack ?? 0.0005,
+    preset.decay ?? bodyDur
+  );
+
+  body.connect(bodyFilter);
+  bodyFilter.connect(bodyGain);
+  bodyGain.connect(out);
+
+  body.start(time);
+  body.stop(time + bodyDur + 0.025);
+
+  const noiseSrc = audio.createBufferSource();
+  const noiseGain = audio.createGain();
+  const noiseHp = audio.createBiquadFilter();
+  const noiseBp = audio.createBiquadFilter();
+
+  const noiseDur = preset.noiseDur ?? 0.15;
+
+  noiseSrc.buffer = noise(noiseDur + 0.04);
+
+  noiseHp.type = 'highpass';
+  noiseHp.frequency.setValueAtTime(
+    Math.max(800, freq * (preset.noiseHpRatio ?? 18)),
+    time
+  );
+
+  noiseBp.type = 'bandpass';
+  noiseBp.frequency.setValueAtTime(
+    Math.min(
+      15000,
+      Math.max(1800, freq * (preset.noiseBpRatio ?? 48))
+    ),
+    time
+  );
+
+  noiseBp.Q.setValueAtTime(
+    preset.noiseQ ?? 0.8,
+    time
+  );
+
+  envelope(
+    noiseGain,
+    finalLevel * (preset.noiseLevel ?? 0.7),
+    time,
+    preset.attack ?? 0.0004,
+    noiseDur
+  );
+
+  noiseSrc.connect(noiseHp);
+  noiseHp.connect(noiseBp);
+  noiseBp.connect(noiseGain);
+  noiseGain.connect(out);
+
+  noiseSrc.start(time);
+  noiseSrc.stop(time + noiseDur + 0.015);
+
+  const rim = audio.createOscillator();
+  const rimGain = audio.createGain();
+
+  const rimFreq = Math.min(
+    audio.sampleRate * 0.4,
+    Math.max(250, freq * (preset.rimRatio ?? 8))
+  );
+
+  rim.type =
+    type === '909'
+      ? 'square'
+      : type === 'crushed'
+        ? 'sawtooth'
+        : 'triangle';
+
+  rim.frequency.setValueAtTime(
+    rimFreq,
+    time
+  );
+
+  rim.frequency.exponentialRampToValueAtTime(
+    Math.max(120, rimFreq * 0.55),
+    time + (preset.rimDur ?? 0.006)
+  );
+
+  envelope(
+    rimGain,
+    finalLevel * (preset.rimLevel ?? 0.3),
+    time,
+    0.0001,
+    preset.rimDur ?? 0.006
+  );
+
+  rim.connect(rimGain);
+  rimGain.connect(out);
+
+  rim.start(time);
+  rim.stop(
+    time + (preset.rimDur ?? 0.006) + 0.004
+  );
+
+  if ((preset.snapLevel ?? 0) > 0) {
+    const snap = audio.createOscillator();
+    const snapGain = audio.createGain();
+    const snapFilter = audio.createBiquadFilter();
+
+    const snapFreq = Math.min(
+      audio.sampleRate * 0.45,
+      Math.max(1000, freq * (preset.snapRatio ?? 20))
+    );
+
+    snap.type =
+      type === '909'
+        ? 'square'
+        : 'triangle';
+
+    snap.frequency.setValueAtTime(
+      snapFreq,
+      time
+    );
+
+    snap.frequency.exponentialRampToValueAtTime(
+      Math.max(500, snapFreq * 0.35),
+      time + (preset.snapDur ?? 0.004)
+    );
+
+    snapFilter.type = 'highpass';
+    snapFilter.frequency.setValueAtTime(
+      Math.max(900, freq * 7),
+      time
+    );
+
+    envelope(
+      snapGain,
+      finalLevel * preset.snapLevel,
+      time,
+      0.00005,
+      preset.snapDur ?? 0.004
+    );
+
+    snap.connect(snapFilter);
+    snapFilter.connect(snapGain);
+    snapGain.connect(out);
+
+    snap.start(time);
+    snap.stop(
+      time + (preset.snapDur ?? 0.004) + 0.003
+    );
   }
+
+  if ((preset.drive ?? 0) > 0) {
+    const saturation = audio.createWaveShaper();
+
+    const amount = preset.drive;
+
+    const curve = new Float32Array(44100);
+
+    for (let i = 0; i < curve.length; i++) {
+      const x = (i * 2) / curve.length - 1;
+
+      curve[i] =
+        ((1 + amount * 10) * x) /
+        (1 + amount * 10 * Math.abs(x));
+    }
+
+    saturation.curve = curve;
+    saturation.oversample = '4x';
+  }
+
+  return;
+}
 
   // 3. HAT (Hauteur dépendant de la note)
-  if (inst.voice === 'hat') {
-    const ratios = [1.0, 1.48, 1.8, 2.54];
-    const hatGain = audio.createGain();
-    const hp = audio.createBiquadFilter();
-    
-    hp.type = 'highpass';
-    hp.frequency.setValueAtTime(cutoffFreq, time);
+if (inst.voice === 'hat') {
+  const hatGain = audio.createGain();
+  const hp = audio.createBiquadFilter();
+  const metal = audio.createBiquadFilter();
+  const body = audio.createBiquadFilter();
 
-    const hatDur = preset.dur || (0.03 + wx * 0.08);
+  const hatDur = preset.dur || (0.03 + wx * 0.08);
+  const level = finalLevel * 0.5;
+  const hpFreq = preset.hpFreq || cutoffFreq;
 
-    ratios.forEach(r => {
+  hp.type = 'highpass';
+  hp.frequency.setValueAtTime(hpFreq, time);
+
+  metal.type = 'bandpass';
+  metal.frequency.setValueAtTime(
+    preset.metalFreq || Math.max(7000, freq * 12),
+    time
+  );
+  metal.Q.setValueAtTime(preset.metalQ || 0.8, time);
+
+  body.type = 'highpass';
+  body.frequency.setValueAtTime(
+    preset.bodyFreq || Math.max(3000, freq * 5),
+    time
+  );
+
+  const noiseSrc = audio.createBufferSource();
+  const noiseGain = audio.createGain();
+
+  noiseSrc.buffer = noise(Math.max(0.08, hatDur + 0.08));
+
+  const attack = preset.attack || 0.001;
+  const choke = preset.choke ?? 0.75;
+
+  noiseGain.gain.setValueAtTime(0.0001, time);
+  noiseGain.gain.exponentialRampToValueAtTime(
+    Math.max(0.0002, level * (preset.noiseLevel || 1)),
+    time + attack
+  );
+  noiseGain.gain.exponentialRampToValueAtTime(
+    0.0001,
+    time + Math.max(attack + 0.002, hatDur * choke)
+  );
+
+  noiseSrc.connect(hp);
+  hp.connect(metal);
+  metal.connect(noiseGain);
+  noiseGain.connect(hatGain);
+
+  if ((preset.bodyLevel || 0) > 0) {
+    const bodySrc = audio.createBufferSource();
+    const bodyGain = audio.createGain();
+
+    bodySrc.buffer = noise(Math.max(0.05, hatDur + 0.05));
+
+    bodyGain.gain.setValueAtTime(0.0001, time);
+    bodyGain.gain.exponentialRampToValueAtTime(
+      level * preset.bodyLevel,
+      time + (preset.bodyAttack || 0.0015)
+    );
+    bodyGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      time + Math.max(0.004, hatDur * 0.55)
+    );
+
+    bodySrc.connect(body);
+    body.connect(bodyGain);
+    bodyGain.connect(hatGain);
+
+    bodySrc.start(time);
+    bodySrc.stop(time + hatDur + 0.04);
+  }
+
+  if (preset.metalRatios) {
+    const metalGain = audio.createGain();
+
+    metalGain.gain.setValueAtTime(0.0001, time);
+    metalGain.gain.exponentialRampToValueAtTime(
+      level * (preset.metalLevel || 0.35),
+      time + (preset.metalAttack || 0.0005)
+    );
+    metalGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      time + hatDur
+    );
+
+    preset.metalRatios.forEach((ratio, index) => {
       const osc = audio.createOscillator();
-      osc.type = waveType;
-      osc.frequency.setValueAtTime(freq * r * 4, time);
-      osc.connect(hp);
+
+      osc.type = preset.metalWave || 'square';
+
+      osc.frequency.setValueAtTime(
+        Math.max(5000, freq * ratio * 12),
+        time
+      );
+
+      if (preset.detune) {
+        osc.detune.setValueAtTime(
+          index % 2 === 0 ? preset.detune : -preset.detune,
+          time
+        );
+      }
+
+      osc.connect(metalGain);
+
       osc.start(time);
-      osc.stop(time + hatDur);
+      osc.stop(time + hatDur + 0.015);
     });
 
-    envelope(hatGain, finalLevel * 0.5, time, 0.001, hatDur);
-    hp.connect(hatGain);
-    hatGain.connect(out);
-    return;
+    metalGain.connect(hatGain);
   }
+
+  if (preset.click) {
+    const click = audio.createOscillator();
+    const clickGain = audio.createGain();
+
+    click.type = preset.clickWave || 'square';
+    click.frequency.setValueAtTime(
+      preset.clickFreq || Math.max(9000, freq * 18),
+      time
+    );
+
+    clickGain.gain.setValueAtTime(
+      level * (preset.clickLevel || 0.15),
+      time
+    );
+
+    clickGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      time + (preset.clickDur || 0.004)
+    );
+
+    click.connect(clickGain);
+    clickGain.connect(hatGain);
+
+    click.start(time);
+    click.stop(time + (preset.clickDur || 0.004) + 0.005);
+  }
+
+  hatGain.connect(out);
+
+  noiseSrc.start(time);
+  noiseSrc.stop(time + hatDur + 0.06);
+
+  return;
+}
 
   // 4. SUB
   if (inst.voice === 'sub') {
@@ -1149,233 +2229,1968 @@ function playNote(inst, freq, time, duration, forcePlay = false) {
 
   // 5. KALIMBA / PERCUSSION
   if (inst.voice === 'kalimba') {
-    const osc1 = audio.createOscillator();
-    const osc2 = audio.createOscillator();
-    const gain = audio.createGain();
+  const type = preset.type || 'kalimba';
 
-    osc1.type = waveType;
-    osc1.frequency.setValueAtTime(freq, time);
+  const body = audio.createOscillator();
+  const bodyGain = audio.createGain();
+  const bodyFilter = audio.createBiquadFilter();
 
-    const ratio = preset.harmonicRatio !== undefined ? preset.harmonicRatio : (1.5 + wx * 3);
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(freq * ratio, time);
+  const overtone = audio.createOscillator();
+  const overtoneGain = audio.createGain();
 
-    const decay = preset.decay || (0.1 + wy * 0.4);
+  const bodyFreq = Math.max(45, freq);
+  const harmonicRatio = preset.harmonicRatio ?? 2;
+  const secondaryRatio = preset.secondaryRatio ?? 4;
 
-    if ((preset.noiseAmt || wy * 0.2) > 0) {
-      const nSrc = audio.createBufferSource();
-      const nGain = audio.createGain();
-      nSrc.buffer = noise(decay);
-      envelope(nGain, finalLevel * (preset.noiseAmt || wy * 0.15), time, 0.001, 0.02);
-      nSrc.connect(nGain);
-      nGain.connect(out);
-      nSrc.start(time);
-      nSrc.stop(time + 0.03);
-    }
+  const decay = preset.decay ?? 0.3;
+  const attack = preset.attack ?? 0.0008;
 
-    envelope(gain, finalLevel * 0.8, time, 0.001, decay);
+  body.type =
+    type === 'wood'
+      ? 'triangle'
+      : type === 'metal'
+      ? 'square'
+      : type === 'hollow'
+      ? 'sine'
+      : waveType;
 
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(out);
+  body.frequency.setValueAtTime(bodyFreq, time);
 
-    osc1.start(time); osc2.start(time);
-    osc1.stop(time + decay + 0.02); osc2.stop(time + decay + 0.02);
-    return;
+  if (type === 'wood') {
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(40, bodyFreq * 0.78),
+      time + 0.018
+    );
+  } else if (type === 'metal') {
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(50, bodyFreq * 0.91),
+      time + 0.035
+    );
+  } else if (type === 'hollow') {
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(40, bodyFreq * 0.68),
+      time + 0.055
+    );
+  } else {
+    body.frequency.exponentialRampToValueAtTime(
+      Math.max(40, bodyFreq * 0.84),
+      time + 0.025
+    );
   }
+
+  bodyFilter.type =
+    type === 'wood'
+      ? 'bandpass'
+      : type === 'metal'
+      ? 'highpass'
+      : type === 'hollow'
+      ? 'lowpass'
+      : 'bandpass';
+
+  bodyFilter.frequency.setValueAtTime(
+    type === 'wood'
+      ? Math.min(8500, bodyFreq * 5.5)
+      : type === 'metal'
+      ? Math.min(13000, bodyFreq * 8)
+      : type === 'hollow'
+      ? Math.min(3200, bodyFreq * 2.7)
+      : Math.min(7000, bodyFreq * 4.5),
+    time
+  );
+
+  bodyFilter.Q.setValueAtTime(
+    type === 'wood'
+      ? 2.8
+      : type === 'metal'
+      ? 4.5
+      : type === 'hollow'
+      ? 1.6
+      : 3.2,
+    time
+  );
+
+  envelope(
+    bodyGain,
+    finalLevel * (preset.bodyLevel ?? 0.7),
+    time,
+    attack,
+    decay
+  );
+
+  body.connect(bodyFilter);
+  bodyFilter.connect(bodyGain);
+  bodyGain.connect(out);
+
+  overtone.type =
+    type === 'metal'
+      ? 'triangle'
+      : 'sine';
+
+  overtone.frequency.setValueAtTime(
+    Math.min(16000, bodyFreq * harmonicRatio),
+    time
+  );
+
+  envelope(
+    overtoneGain,
+    finalLevel * (preset.secondaryLevel ?? 0.25),
+    time,
+    Math.max(0.0002, attack * 0.8),
+    decay * (
+      type === 'wood'
+        ? 0.45
+        : type === 'metal'
+        ? 0.75
+        : 0.65
+    )
+  );
+
+  overtone.connect(overtoneGain);
+  overtoneGain.connect(out);
+
+  body.start(time);
+  overtone.start(time);
+
+  body.stop(time + decay + 0.04);
+  overtone.stop(time + decay + 0.04);
+
+  if ((preset.noiseAmt ?? 0) > 0) {
+    const click = audio.createBufferSource();
+    const clickGain = audio.createGain();
+    const clickFilter = audio.createBiquadFilter();
+
+    const noiseDur = preset.noiseDur ?? 0.015;
+
+    click.buffer = noise(noiseDur + 0.01);
+
+    clickFilter.type =
+      type === 'wood'
+        ? 'bandpass'
+        : type === 'metal'
+        ? 'highpass'
+        : 'highpass';
+
+    clickFilter.frequency.setValueAtTime(
+      type === 'wood'
+        ? Math.min(9000, bodyFreq * 7)
+        : type === 'metal'
+        ? Math.min(15000, bodyFreq * 11)
+        : Math.min(10000, bodyFreq * 6),
+      time
+    );
+
+    clickFilter.Q.setValueAtTime(
+      type === 'metal' ? 2.5 : 1.2,
+      time
+    );
+
+    envelope(
+      clickGain,
+      finalLevel * (preset.noiseAmt ?? 0.05),
+      time,
+      0.0001,
+      noiseDur
+    );
+
+    click.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(out);
+
+    click.start(time);
+    click.stop(time + noiseDur + 0.005);
+  }
+
+  if (type === 'metal') {
+    const ring = audio.createOscillator();
+    const ringGain = audio.createGain();
+
+    ring.type = 'sine';
+
+    ring.frequency.setValueAtTime(
+      Math.min(16000, bodyFreq * secondaryRatio),
+      time
+    );
+
+    envelope(
+      ringGain,
+      finalLevel * 0.16,
+      time,
+      0.0001,
+      decay * 1.35
+    );
+
+    ring.connect(ringGain);
+    ringGain.connect(out);
+
+    ring.start(time);
+    ring.stop(time + decay * 1.35 + 0.04);
+  }
+
+  return;
+}
 
   // 6. PLUCK
   if (inst.voice === 'pluck') {
-    const carrier = audio.createOscillator();
-    const modulator = audio.createOscillator();
-    const modGain = audio.createGain();
-    const gain = audio.createGain();
+  const type = preset.type || 'electric';
 
-    carrier.type = waveType;
-    modulator.type = 'sine';
+  const carrier = audio.createOscillator();
+  const modulator = audio.createOscillator();
 
-    const ratio = preset.fmRatio || (1 + wx * 4);
-    const modDepth = preset.fmMod || (0.5 + wy * 5);
+  const modGain = audio.createGain();
+  const bodyGain = audio.createGain();
+  const harmonicGain = audio.createGain();
 
-    carrier.frequency.setValueAtTime(freq, time);
-    modulator.frequency.setValueAtTime(freq * ratio, time);
+  const filter = audio.createBiquadFilter();
 
-    modGain.gain.setValueAtTime(freq * modDepth, time);
-    modGain.gain.exponentialRampToValueAtTime(0.1, time + 0.05);
+  const ratio = preset.fmRatio ?? 1.5;
+  const fmAmount = preset.fmMod ?? 1;
 
-    modulator.connect(modGain);
-    modGain.connect(carrier.frequency);
+  const decay = preset.decay ?? Math.max(0.12, len * 0.5);
+  const attack = preset.attack ?? 0.0005;
 
-    envelope(gain, finalLevel * 0.8, time, 0.001, len * 0.5);
-    carrier.connect(gain);
-    gain.connect(out);
+  carrier.type =
+    type === 'nylon'
+      ? 'sine'
+      : type === 'electric'
+      ? 'triangle'
+      : type === 'glass'
+      ? 'sine'
+      : 'sawtooth';
 
-    carrier.start(time); modulator.start(time);
-    carrier.stop(time + len + 0.05); modulator.stop(time + len + 0.05);
-    return;
+  modulator.type =
+    type === 'sitar'
+      ? 'triangle'
+      : 'sine';
+
+  carrier.frequency.setValueAtTime(
+    Math.max(25, freq),
+    time
+  );
+
+  modulator.frequency.setValueAtTime(
+    Math.min(18000, Math.max(30, freq * ratio)),
+    time
+  );
+
+  modGain.gain.setValueAtTime(
+    Math.max(0.01, freq * fmAmount),
+    time
+  );
+
+  modGain.gain.exponentialRampToValueAtTime(
+    Math.max(0.01, freq * fmAmount * (
+      type === 'glass'
+        ? 0.12
+        : type === 'sitar'
+        ? 0.3
+        : 0.06
+    )),
+    time + (
+      type === 'nylon'
+        ? 0.045
+        : type === 'electric'
+        ? 0.025
+        : type === 'glass'
+        ? 0.075
+        : 0.018
+    )
+  );
+
+  modulator.connect(modGain);
+  modGain.connect(carrier.frequency);
+
+  filter.type =
+    type === 'nylon'
+      ? 'lowpass'
+      : type === 'electric'
+      ? 'lowpass'
+      : type === 'glass'
+      ? 'highpass'
+      : 'bandpass';
+
+  filter.frequency.setValueAtTime(
+    type === 'nylon'
+      ? Math.min(4200, freq * 7)
+      : type === 'electric'
+      ? Math.min(9000, freq * 13)
+      : type === 'glass'
+      ? Math.min(15000, freq * 18)
+      : Math.min(7000, freq * 10),
+    time
+  );
+
+  filter.Q.setValueAtTime(
+    type === 'nylon'
+      ? 0.7
+      : type === 'electric'
+      ? 1.4
+      : type === 'glass'
+      ? 3.2
+      : 2.6,
+    time
+  );
+
+  envelope(
+    bodyGain,
+    finalLevel * (preset.bodyLevel ?? 0.7),
+    time,
+    attack,
+    decay
+  );
+
+  carrier.connect(filter);
+  filter.connect(bodyGain);
+  bodyGain.connect(out);
+
+  const harmonic = audio.createOscillator();
+
+  harmonic.type =
+    type === 'sitar'
+      ? 'triangle'
+      : type === 'glass'
+      ? 'square'
+      : 'sine';
+
+  const harmonicRatio =
+    type === 'nylon'
+      ? 2.01
+      : type === 'electric'
+      ? 3.01
+      : type === 'glass'
+      ? 6.13
+      : 2.47;
+
+  harmonic.frequency.setValueAtTime(
+    Math.min(18000, freq * harmonicRatio),
+    time
+  );
+
+  envelope(
+    harmonicGain,
+    finalLevel * (preset.harmonicLevel ?? 0.2),
+    time,
+    Math.max(0.0001, attack * 0.7),
+    decay * (
+      type === 'nylon'
+        ? 0.55
+        : type === 'glass'
+        ? 0.7
+        : 0.42
+    )
+  );
+
+  harmonic.connect(harmonicGain);
+  harmonicGain.connect(out);
+
+  carrier.start(time);
+  modulator.start(time);
+  harmonic.start(time);
+
+  carrier.stop(time + decay + 0.06);
+  modulator.stop(time + decay + 0.06);
+  harmonic.stop(time + decay + 0.06);
+
+  if ((preset.noiseAmt ?? 0) > 0) {
+    const pick = audio.createBufferSource();
+    const pickGain = audio.createGain();
+    const pickFilter = audio.createBiquadFilter();
+
+    const pickDur = preset.noiseDur ?? 0.01;
+
+    pick.buffer = noise(pickDur + 0.008);
+
+    pickFilter.type =
+      type === 'nylon'
+        ? 'lowpass'
+        : type === 'glass'
+        ? 'highpass'
+        : 'bandpass';
+
+    pickFilter.frequency.setValueAtTime(
+      type === 'nylon'
+        ? Math.min(3500, freq * 4)
+        : type === 'electric'
+        ? Math.min(8500, freq * 12)
+        : type === 'glass'
+        ? Math.min(15000, freq * 20)
+        : Math.min(7000, freq * 14),
+      time
+    );
+
+    envelope(
+      pickGain,
+      finalLevel * (preset.noiseAmt ?? 0.05),
+      time,
+      0.00005,
+      pickDur
+    );
+
+    pick.connect(pickFilter);
+    pickFilter.connect(pickGain);
+    pickGain.connect(out);
+
+    pick.start(time);
+    pick.stop(time + pickDur + 0.004);
   }
+
+  return;
+}
 
   // 7. RHODES
   if (inst.voice === 'rhodes') {
-    const fundamental = audio.createOscillator();
-    const tine = audio.createOscillator();
-    const gain = audio.createGain();
-    const tineGain = audio.createGain();
+  const type = preset.type || 'suitcase';
 
-    fundamental.type = waveType;
-    fundamental.frequency.setValueAtTime(freq, time);
+  const body = audio.createOscillator();
+  const bodyGain = audio.createGain();
 
-    const tineRatio = preset.tineRatio || (2 + wx * 4);
-    tine.type = 'triangle';
-    tine.frequency.setValueAtTime(freq * tineRatio, time);
+  const tine = audio.createOscillator();
+  const tineGain = audio.createGain();
 
-    const tineVol = preset.tineVol !== undefined ? preset.tineVol : wy;
-    const release = preset.release || 0.4;
+  const tineFilter = audio.createBiquadFilter();
 
-    envelope(gain, finalLevel * 0.75, time, 0.004, len * release);
-    envelope(tineGain, finalLevel * tineVol, time, 0.001, 0.05);
+  const bodyFilter = audio.createBiquadFilter();
 
-    fundamental.connect(gain);
-    tine.connect(tineGain);
+  const bodyFreq = Math.max(35, freq);
 
-    gain.connect(out);
-    tineGain.connect(out);
+  const tineRatio = preset.tineRatio ?? 2.5;
+  const tineFreq = Math.min(18000, bodyFreq * tineRatio);
 
-    fundamental.start(time); tine.start(time);
-    fundamental.stop(time + len + 0.05); tine.stop(time + 0.08);
-    return;
+  const release = preset.release ?? 0.8;
+
+  body.type =
+    type === 'hard'
+      ? 'triangle'
+      : type === 'dirty'
+      ? 'sawtooth'
+      : 'sine';
+
+  body.frequency.setValueAtTime(bodyFreq, time);
+
+  bodyFilter.type = 'lowpass';
+
+  bodyFilter.frequency.setValueAtTime(
+    preset.cutoff ?? (
+      type === 'suitcase'
+        ? Math.min(4200, bodyFreq * 12)
+        : type === 'hard'
+        ? Math.min(8500, bodyFreq * 20)
+        : type === 'dirty'
+        ? Math.min(6500, bodyFreq * 16)
+        : Math.min(6000, bodyFreq * 15)
+    ),
+    time
+  );
+
+  bodyFilter.Q.setValueAtTime(
+    preset.resonance ?? 1.2,
+    time
+  );
+
+  envelope(
+    bodyGain,
+    finalLevel * (preset.bodyLevel ?? 0.7),
+    time,
+    0.003,
+    len * release
+  );
+
+  body.connect(bodyFilter);
+  bodyFilter.connect(bodyGain);
+  bodyGain.connect(out);
+
+  tine.type =
+    type === 'hard'
+      ? 'square'
+      : type === 'dirty'
+      ? 'sawtooth'
+      : 'triangle';
+
+  tine.frequency.setValueAtTime(
+    tineFreq,
+    time
+  );
+
+  tineFilter.type =
+    type === 'suitcase'
+      ? 'bandpass'
+      : type === 'hard'
+      ? 'highpass'
+      : type === 'dirty'
+      ? 'bandpass'
+      : 'highpass';
+
+  tineFilter.frequency.setValueAtTime(
+    type === 'suitcase'
+      ? Math.min(7000, tineFreq * 1.3)
+      : type === 'hard'
+      ? Math.min(15000, tineFreq * 1.8)
+      : type === 'dirty'
+      ? Math.min(11000, tineFreq * 1.45)
+      : Math.min(13000, tineFreq * 1.6),
+    time
+  );
+
+  tineFilter.Q.setValueAtTime(
+    type === 'suitcase'
+      ? 1.8
+      : type === 'hard'
+      ? 4.2
+      : type === 'dirty'
+      ? 3.5
+      : 2.5,
+    time
+  );
+
+  envelope(
+    tineGain,
+    finalLevel * (preset.tineVol ?? 0.3),
+    time,
+    preset.tineAttack ?? 0.001,
+    preset.tineDecay ?? 0.08
+  );
+
+  tine.connect(tineFilter);
+  tineFilter.connect(tineGain);
+  tineGain.connect(out);
+
+  body.start(time);
+  tine.start(time);
+
+  body.stop(
+    time + len * release + 0.08
+  );
+
+  tine.stop(
+    time + Math.max(0.08, preset.tineDecay ?? 0.08) + 0.04
+  );
+
+  if (type === 'chorus') {
+    const chorus = audio.createOscillator();
+    const chorusGain = audio.createGain();
+    const chorusFilter = audio.createBiquadFilter();
+
+    chorus.type = 'triangle';
+
+    chorus.frequency.setValueAtTime(
+      bodyFreq,
+      time
+    );
+
+    chorus.detune.setValueAtTime(
+      -(preset.detune ?? 7),
+      time
+    );
+
+    chorusFilter.type = 'lowpass';
+
+    chorusFilter.frequency.setValueAtTime(
+      Math.min(5200, bodyFreq * 14),
+      time
+    );
+
+    envelope(
+      chorusGain,
+      finalLevel * 0.42,
+      time,
+      0.006,
+      len * release * 0.9
+    );
+
+    chorus.connect(chorusFilter);
+    chorusFilter.connect(chorusGain);
+    chorusGain.connect(out);
+
+    chorus.start(time);
+    chorus.stop(
+      time + len * release + 0.08
+    );
   }
+
+  if (type === 'dirty' && (preset.drive ?? 0) > 0) {
+    const drive = audio.createWaveShaper();
+
+    const amount = preset.drive;
+    const curve = new Float32Array(44100);
+
+    for (let i = 0; i < curve.length; i++) {
+      const x = (i * 2) / curve.length - 1;
+
+      curve[i] =
+        ((1 + amount * 14) * x) /
+        (1 + amount * 14 * Math.abs(x));
+    }
+
+    drive.curve = curve;
+    drive.oversample = '4x';
+
+    tineFilter.disconnect();
+    tineFilter.connect(drive);
+    drive.connect(tineGain);
+  }
+
+  if (
+    type === 'hard' ||
+    type === 'dirty'
+  ) {
+    const attack = audio.createBufferSource();
+    const attackGain = audio.createGain();
+    const attackFilter = audio.createBiquadFilter();
+
+    attack.buffer = noise(
+      type === 'hard'
+        ? 0.009
+        : 0.014
+    );
+
+    attackFilter.type = 'bandpass';
+
+    attackFilter.frequency.setValueAtTime(
+      Math.min(
+        15000,
+        Math.max(
+          3000,
+          bodyFreq * (
+            type === 'hard'
+              ? 11
+              : 8
+          )
+        )
+      ),
+      time
+    );
+
+    attackFilter.Q.setValueAtTime(
+      type === 'hard' ? 3.5 : 2.2,
+      time
+    );
+
+    envelope(
+      attackGain,
+      finalLevel * (
+        type === 'hard'
+          ? 0.18
+          : 0.12
+      ),
+      time,
+      0.00005,
+      type === 'hard'
+        ? 0.008
+        : 0.012
+    );
+
+    attack.connect(attackFilter);
+    attackFilter.connect(attackGain);
+    attackGain.connect(out);
+
+    attack.start(time);
+    attack.stop(
+      time + (
+        type === 'hard'
+          ? 0.012
+          : 0.018
+      )
+    );
+  }
+
+  return;
+}
 
   // 8. BRASS
   if (inst.voice === 'brass') {
-    const osc1 = audio.createOscillator();
-    const osc2 = audio.createOscillator();
-    const filter = audio.createBiquadFilter();
-    const gain = audio.createGain();
+  const type = preset.type || 'section';
 
-    osc1.type = waveType;
-    osc2.type = 'sawtooth';
+  const osc1 = audio.createOscillator();
+  const osc2 = audio.createOscillator();
 
-    const detune = preset.detune || (2 + wx * 20);
-    osc1.frequency.setValueAtTime(freq, time);
-    osc2.frequency.setValueAtTime(freq * Math.pow(2, detune / 1200), time);
+  const gain1 = audio.createGain();
+  const gain2 = audio.createGain();
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(freq * 1.2, time);
-    filter.frequency.exponentialRampToValueAtTime(Math.min(14000, cutoffFreq), time + 0.04);
+  const filter1 = audio.createBiquadFilter();
+  const filter2 = audio.createBiquadFilter();
 
-    envelope(gain, finalLevel * 0.7, time, preset.attack || 0.02, len);
+  const bodyFreq = Math.max(45, freq);
 
-    osc1.connect(filter); osc2.connect(filter);
-    filter.connect(gain);
-    gain.connect(out);
+  const detune1 = preset.detune ?? 8;
+  const detune2 = preset.secondDetune ?? -6;
 
-    osc1.start(time); osc2.start(time);
-    osc1.stop(time + len + 0.05); osc2.stop(time + len + 0.05);
-    return;
+  osc1.type =
+    type === 'muted'
+      ? 'triangle'
+      : type === 'trumpet'
+      ? 'sawtooth'
+      : 'sawtooth';
+
+  osc2.type =
+    type === 'muted'
+      ? 'sine'
+      : type === 'massive'
+      ? 'sawtooth'
+      : 'square';
+
+  osc1.frequency.setValueAtTime(
+    bodyFreq,
+    time
+  );
+
+  osc2.frequency.setValueAtTime(
+    bodyFreq,
+    time
+  );
+
+  osc1.detune.setValueAtTime(
+    detune1,
+    time
+  );
+
+  osc2.detune.setValueAtTime(
+    detune2,
+    time
+  );
+
+  const startCutoff =
+    preset.cutoffStart ??
+    (
+      type === 'muted'
+        ? 500
+        : 900
+    );
+
+  const endCutoff =
+    preset.cutoffEnd ??
+    (
+      type === 'trumpet'
+        ? 8500
+        : 6000
+    );
+
+  filter1.type = 'lowpass';
+  filter2.type = 'lowpass';
+
+  filter1.frequency.setValueAtTime(
+    Math.min(
+      14000,
+      Math.max(
+        250,
+        startCutoff
+      )
+    ),
+    time
+  );
+
+  filter2.frequency.setValueAtTime(
+    Math.min(
+      14000,
+      Math.max(
+        300,
+        startCutoff * (
+          type === 'massive'
+            ? 1.15
+            : 0.9
+        )
+      )
+    ),
+    time
+  );
+
+  filter1.frequency.exponentialRampToValueAtTime(
+    Math.min(
+      15000,
+      Math.max(
+        500,
+        endCutoff
+      )
+    ),
+    time + (
+      type === 'muted'
+        ? 0.16
+        : type === 'trumpet'
+        ? 0.045
+        : 0.075
+    )
+  );
+
+  filter2.frequency.exponentialRampToValueAtTime(
+    Math.min(
+      15000,
+      Math.max(
+        500,
+        endCutoff * (
+          type === 'massive'
+            ? 0.82
+            : 0.9
+        )
+      )
+    ),
+    time + (
+      type === 'muted'
+        ? 0.2
+        : 0.09
+    )
+  );
+
+  filter1.Q.setValueAtTime(
+    preset.resonance ?? 2,
+    time
+  );
+
+  filter2.Q.setValueAtTime(
+    Math.max(
+      0.5,
+      (preset.resonance ?? 2) * 0.72
+    ),
+    time
+  );
+
+  envelope(
+    gain1,
+    finalLevel * (
+      preset.bodyLevel ?? 0.7
+    ),
+    time,
+    preset.attack ?? 0.02,
+    len * (
+      preset.release ?? 0.35
+    )
+  );
+
+  envelope(
+    gain2,
+    finalLevel * (
+      preset.secondLevel ?? 0.35
+    ),
+    time,
+    Math.max(
+      0.001,
+      (preset.attack ?? 0.02) * 0.65
+    ),
+    len * (
+      preset.release ?? 0.3
+    )
+  );
+
+  osc1.connect(filter1);
+  filter1.connect(gain1);
+  gain1.connect(out);
+
+  osc2.connect(filter2);
+  filter2.connect(gain2);
+  gain2.connect(out);
+
+  osc1.start(time);
+  osc2.start(time);
+
+  osc1.stop(
+    time +
+    len * (preset.release ?? 0.35) +
+    0.08
+  );
+
+  osc2.stop(
+    time +
+    len * (preset.release ?? 0.3) +
+    0.08
+  );
+
+  if ((preset.breathLevel ?? 0) > 0) {
+    const breath = audio.createBufferSource();
+    const breathGain = audio.createGain();
+    const breathFilter = audio.createBiquadFilter();
+
+    const breathDur =
+      preset.breathDur ?? 0.06;
+
+    breath.buffer = noise(
+      breathDur + 0.02
+    );
+
+    breathFilter.type =
+      type === 'muted'
+        ? 'lowpass'
+        : 'bandpass';
+
+    breathFilter.frequency.setValueAtTime(
+      type === 'trumpet'
+        ? Math.min(
+            12000,
+            bodyFreq * 7
+          )
+        : type === 'muted'
+        ? Math.min(
+            4200,
+            bodyFreq * 3
+          )
+        : Math.min(
+            8000,
+            bodyFreq * 5
+          ),
+      time
+    );
+
+    breathFilter.Q.setValueAtTime(
+      type === 'trumpet'
+        ? 2.8
+        : 1.2,
+      time
+    );
+
+    envelope(
+      breathGain,
+      finalLevel *
+      preset.breathLevel,
+      time,
+      0.0005,
+      breathDur
+    );
+
+    breath.connect(breathFilter);
+    breathFilter.connect(breathGain);
+    breathGain.connect(out);
+
+    breath.start(time);
+    breath.stop(
+      time +
+      breathDur +
+      0.01
+    );
   }
+
+  if (
+    type === 'trumpet' ||
+    type === 'massive'
+  ) {
+    const bite = audio.createOscillator();
+    const biteGain = audio.createGain();
+    const biteFilter = audio.createBiquadFilter();
+
+    bite.type =
+      type === 'trumpet'
+        ? 'square'
+        : 'sawtooth';
+
+    bite.frequency.setValueAtTime(
+      Math.min(
+        16000,
+        bodyFreq * (
+          type === 'trumpet'
+            ? 3.02
+            : 2.01
+        )
+      ),
+      time
+    );
+
+    biteFilter.type = 'bandpass';
+
+    biteFilter.frequency.setValueAtTime(
+      Math.min(
+        12000,
+        bodyFreq * 5.5
+      ),
+      time
+    );
+
+    biteFilter.Q.setValueAtTime(
+      type === 'trumpet'
+        ? 4
+        : 2.5,
+      time
+    );
+
+    envelope(
+      biteGain,
+      finalLevel * (
+        type === 'trumpet'
+          ? 0.16
+          : 0.1
+      ),
+      time,
+      0.0001,
+      type === 'trumpet'
+        ? 0.035
+        : 0.055
+    );
+
+    bite.connect(biteFilter);
+    biteFilter.connect(biteGain);
+    biteGain.connect(out);
+
+    bite.start(time);
+    bite.stop(
+      time +
+      (
+        type === 'trumpet'
+          ? 0.045
+          : 0.07
+      )
+    );
+  }
+
+  if (type === 'massive') {
+    const drive = audio.createWaveShaper();
+
+    const amount =
+      preset.drive ?? 0.18;
+
+    const curve =
+      new Float32Array(44100);
+
+    for (
+      let i = 0;
+      i < curve.length;
+      i++
+    ) {
+      const x =
+        (i * 2) /
+        curve.length -
+        1;
+
+      curve[i] =
+        ((1 + amount * 12) * x) /
+        (
+          1 +
+          amount * 12 *
+          Math.abs(x)
+        );
+    }
+
+    drive.curve = curve;
+    drive.oversample = '4x';
+
+    filter1.disconnect();
+    filter1.connect(drive);
+    drive.connect(gain1);
+  }
+
+  return;
+}
 
   // 9. BELL
   if (inst.voice === 'bell') {
-    const carrier = audio.createOscillator();
-    const modulator = audio.createOscillator();
-    const modGain = audio.createGain();
-    const gain = audio.createGain();
+  const type = preset.type || 'crystal';
 
-    carrier.type = waveType;
-    modulator.type = 'sine';
+  const carrier = audio.createOscillator();
+  const modulator = audio.createOscillator();
 
-    const ratio = preset.fmRatio || (1.4 + wx * 2);
-    const depth = preset.modDepth || (1.0 + wy * 6);
-    const decayMult = preset.decayMult || 1.0;
+  const modGain = audio.createGain();
+  const gain = audio.createGain();
 
-    carrier.frequency.setValueAtTime(freq, time);
-    modulator.frequency.setValueAtTime(freq * ratio, time);
+  const bodyFilter = audio.createBiquadFilter();
 
-    modGain.gain.setValueAtTime(freq * depth, time);
-    modGain.gain.exponentialRampToValueAtTime(0.01, time + 0.1 * decayMult);
+  const bellFreq = Math.max(45, freq);
 
-    modulator.connect(modGain);
-    modGain.connect(carrier.frequency);
+  const ratio = preset.fmRatio ?? 2.5;
+  const depth = preset.modDepth ?? 2.5;
+  const decayMult = preset.decayMult ?? 2;
 
-    envelope(gain, finalLevel * 0.7, time, 0.001, len * decayMult);
-    carrier.connect(gain);
-    gain.connect(out);
+  const attack = preset.attack ?? 0.001;
 
-    carrier.start(time); modulator.start(time);
-    carrier.stop(time + len * decayMult + 0.1); modulator.stop(time + len * decayMult + 0.1);
-    return;
+  carrier.type =
+    type === 'bronze'
+      ? 'sine'
+      : type === 'tubular'
+      ? 'sine'
+      : type === 'musicbox'
+      ? 'triangle'
+      : 'sine';
+
+  modulator.type =
+    type === 'bronze'
+      ? 'sine'
+      : type === 'tubular'
+      ? 'triangle'
+      : 'sine';
+
+  carrier.frequency.setValueAtTime(
+    bellFreq,
+    time
+  );
+
+  modulator.frequency.setValueAtTime(
+    bellFreq * ratio,
+    time
+  );
+
+  modGain.gain.setValueAtTime(
+    bellFreq * depth,
+    time
+  );
+
+  modGain.gain.exponentialRampToValueAtTime(
+    0.01,
+    time + 0.12 * decayMult
+  );
+
+  modulator.connect(modGain);
+  modGain.connect(carrier.frequency);
+
+  bodyFilter.type =
+    type === 'bronze'
+      ? 'lowpass'
+      : type === 'tubular'
+      ? 'lowpass'
+      : 'highpass';
+
+  bodyFilter.frequency.setValueAtTime(
+    type === 'crystal'
+      ? Math.min(14000, bellFreq * 12)
+      : type === 'musicbox'
+      ? Math.min(11000, bellFreq * 9)
+      : type === 'bronze'
+      ? Math.min(6500, bellFreq * 7)
+      : Math.min(5200, bellFreq * 5),
+    time
+  );
+
+  bodyFilter.Q.setValueAtTime(
+    type === 'crystal'
+      ? 1.8
+      : type === 'musicbox'
+      ? 2.8
+      : type === 'bronze'
+      ? 1.1
+      : 0.8,
+    time
+  );
+
+  envelope(
+    gain,
+    finalLevel *
+      (preset.harmonicLevel ?? 0.5),
+    time,
+    attack,
+    len * decayMult
+  );
+
+  carrier.connect(bodyFilter);
+  bodyFilter.connect(gain);
+  gain.connect(out);
+
+  carrier.start(time);
+  modulator.start(time);
+
+  carrier.stop(
+    time +
+      len * decayMult +
+      0.15
+  );
+
+  modulator.stop(
+    time +
+      len * decayMult +
+      0.15
+  );
+
+  if ((preset.highLevel ?? 0) > 0) {
+    const high = audio.createOscillator();
+    const highGain = audio.createGain();
+    const highFilter = audio.createBiquadFilter();
+
+    const highFreq = Math.min(
+      audio.sampleRate * 0.42,
+      bellFreq * (
+        preset.highRatio ?? 5
+      )
+    );
+
+    high.type =
+      type === 'musicbox'
+        ? 'square'
+        : type === 'crystal'
+        ? 'sine'
+        : 'triangle';
+
+    high.frequency.setValueAtTime(
+      highFreq,
+      time
+    );
+
+    highFilter.type = 'bandpass';
+
+    highFilter.frequency.setValueAtTime(
+      Math.min(
+        16000,
+        highFreq
+      ),
+      time
+    );
+
+    highFilter.Q.setValueAtTime(
+      type === 'crystal'
+        ? 4.5
+        : type === 'musicbox'
+        ? 6
+        : 2,
+      time
+    );
+
+    envelope(
+      highGain,
+      finalLevel *
+        preset.highLevel,
+      time,
+      Math.max(
+        0.0001,
+        attack * 0.5
+      ),
+      len *
+        (preset.highDecay ?? 0.5)
+    );
+
+    high.connect(highFilter);
+    highFilter.connect(highGain);
+    highGain.connect(out);
+
+    high.start(time);
+
+    high.stop(
+      time +
+        len *
+          (preset.highDecay ?? 0.5) +
+        0.06
+    );
   }
+
+  if (
+    type === 'crystal' ||
+    type === 'musicbox'
+  ) {
+    const click = audio.createBufferSource();
+    const clickGain = audio.createGain();
+    const clickFilter = audio.createBiquadFilter();
+
+    const clickDur =
+      type === 'crystal'
+        ? 0.008
+        : 0.012;
+
+    click.buffer = noise(
+      clickDur + 0.01
+    );
+
+    clickFilter.type = 'bandpass';
+
+    clickFilter.frequency.setValueAtTime(
+      Math.min(
+        15000,
+        Math.max(
+          5000,
+          bellFreq * (
+            type === 'crystal'
+              ? 14
+              : 9
+          )
+        )
+      ),
+      time
+    );
+
+    clickFilter.Q.setValueAtTime(
+      type === 'crystal'
+        ? 5
+        : 3,
+      time
+    );
+
+    envelope(
+      clickGain,
+      finalLevel *
+        (
+          type === 'crystal'
+            ? 0.13
+            : 0.09
+        ),
+      time,
+      0.00005,
+      clickDur
+    );
+
+    click.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(out);
+
+    click.start(time);
+
+    click.stop(
+      time +
+        clickDur +
+        0.005
+    );
+  }
+
+  return;
+}
 
   // 10. FLUTE
   if (inst.voice === 'flute') {
-    const osc = audio.createOscillator();
-    const vibrato = audio.createOscillator();
-    const vibratoGain = audio.createGain();
-    const gain = audio.createGain();
+  const type = preset.type || 'bamboo';
 
-    osc.type = waveType;
-    osc.frequency.setValueAtTime(freq, time);
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
 
-    vibrato.frequency.setValueAtTime(preset.vibratoFreq || (3 + wx * 6), time);
-    vibratoGain.gain.setValueAtTime(freq * (0.005 + wy * 0.02), time);
-    vibrato.connect(vibratoGain);
-    vibratoGain.connect(osc.frequency);
+  const filter = audio.createBiquadFilter();
 
-    const noiseAmt = preset.noiseAmt ?? (0.05 + wy * 0.25);
-    if (noiseAmt > 0) {
-      const breath = audio.createBufferSource();
-      const breathFilter = audio.createBiquadFilter();
-      const breathGain = audio.createGain();
-      breath.buffer = noise(len + 0.1);
-      breathFilter.type = 'bandpass';
-      breathFilter.frequency.setValueAtTime(freq * 2, time);
-      breathFilter.Q.value = 3;
-      envelope(breathGain, finalLevel * noiseAmt, time, 0.02, len);
-      breath.connect(breathFilter);
-      breathFilter.connect(breathGain);
-      breathGain.connect(out);
-      breath.start(time);
-      breath.stop(time + len + 0.05);
-    }
+  const vibrato = audio.createOscillator();
+  const vibratoGain = audio.createGain();
 
-    envelope(gain, finalLevel * 0.8, time, 0.03, len);
-    osc.connect(gain);
-    gain.connect(out);
+  const fluteFreq = Math.max(
+    80,
+    freq
+  );
 
-    osc.start(time); vibrato.start(time);
-    osc.stop(time + len + 0.05); vibrato.stop(time + len + 0.05);
-    return;
+  osc.type =
+    type === 'bamboo'
+      ? 'sine'
+      : type === 'concert'
+      ? 'triangle'
+      : type === 'air'
+      ? 'sine'
+      : 'triangle';
+
+  osc.frequency.setValueAtTime(
+    fluteFreq,
+    time
+  );
+
+  vibrato.type =
+    type === 'air'
+      ? 'sine'
+      : 'triangle';
+
+  vibrato.frequency.setValueAtTime(
+    preset.vibratoFreq ??
+      (
+        type === 'concert'
+          ? 5
+          : 3
+      ),
+    time
+  );
+
+  vibratoGain.gain.setValueAtTime(
+    fluteFreq *
+      (
+        preset.vibratoDepth ??
+        0.012
+      ),
+    time
+  );
+
+  vibrato.connect(vibratoGain);
+  vibratoGain.connect(osc.frequency);
+
+  filter.type =
+    type === 'bamboo'
+      ? 'lowpass'
+      : type === 'concert'
+      ? 'lowpass'
+      : type === 'air'
+      ? 'lowpass'
+      : 'bandpass';
+
+  filter.frequency.setValueAtTime(
+    Math.min(
+      15000,
+      Math.max(
+        1000,
+        preset.cutoff ??
+          fluteFreq * 5
+      )
+    ),
+    time
+  );
+
+  filter.Q.setValueAtTime(
+    preset.resonance ??
+      1,
+    time
+  );
+
+  envelope(
+    gain,
+    finalLevel *
+      (
+        preset.bodyLevel ??
+        0.7
+      ),
+    time,
+    preset.attack ??
+      0.03,
+    len *
+      (
+        preset.release ??
+        0.5
+      )
+  );
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(out);
+
+  osc.start(time);
+  vibrato.start(time);
+
+  osc.stop(
+    time +
+      len *
+        (
+          preset.release ??
+          0.5
+        ) +
+      0.08
+  );
+
+  vibrato.stop(
+    time +
+      len *
+        (
+          preset.release ??
+          0.5
+        ) +
+      0.08
+  );
+
+  if (
+    (preset.noiseAmt ?? 0) > 0
+  ) {
+    const breath =
+      audio.createBufferSource();
+
+    const breathGain =
+      audio.createGain();
+
+    const breathFilter =
+      audio.createBiquadFilter();
+
+    const breathDur =
+      Math.max(
+        0.04,
+        len *
+          (
+            preset.breathDecay ??
+            0.15
+          )
+      );
+
+    breath.buffer =
+      noise(
+        breathDur + 0.05
+      );
+
+    breathFilter.type =
+      type === 'bamboo'
+        ? 'bandpass'
+        : type === 'concert'
+        ? 'highpass'
+        : type === 'air'
+        ? 'bandpass'
+        : 'bandpass';
+
+    breathFilter.frequency.setValueAtTime(
+      Math.min(
+        15000,
+        Math.max(
+          900,
+          fluteFreq *
+            (
+              preset.noiseFreqRatio ??
+              3
+            )
+        )
+      ),
+      time
+    );
+
+    breathFilter.Q.setValueAtTime(
+      preset.noiseQ ??
+        1,
+      time
+    );
+
+    envelope(
+      breathGain,
+      finalLevel *
+        (
+          preset.breathLevel ??
+          preset.noiseAmt ??
+          0.15
+        ),
+      time,
+      preset.breathAttack ??
+        0.015,
+      breathDur
+    );
+
+    breath.connect(
+      breathFilter
+    );
+
+    breathFilter.connect(
+      breathGain
+    );
+
+    breathGain.connect(out);
+
+    breath.start(time);
+
+    breath.stop(
+      time +
+        breathDur +
+        0.02
+    );
   }
+
+  if (
+    type === 'bamboo' ||
+    type === 'wood'
+  ) {
+    const harmonic =
+      audio.createOscillator();
+
+    const harmonicGain =
+      audio.createGain();
+
+    harmonic.type =
+      type === 'bamboo'
+        ? 'triangle'
+        : 'sawtooth';
+
+    harmonic.frequency.setValueAtTime(
+      fluteFreq *
+        (
+          type === 'bamboo'
+            ? 2.01
+            : 2.97
+        ),
+      time
+    );
+
+    envelope(
+      harmonicGain,
+      finalLevel *
+        (
+          type === 'bamboo'
+            ? 0.075
+            : 0.11
+        ),
+      time,
+      0.008,
+      len *
+        (
+          type === 'bamboo'
+            ? 0.55
+            : 0.4
+        )
+    );
+
+    harmonic.connect(
+      harmonicGain
+    );
+
+    harmonicGain.connect(
+      out
+    );
+
+    harmonic.start(time);
+
+    harmonic.stop(
+      time +
+        len *
+          (
+            type === 'bamboo'
+              ? 0.55
+              : 0.4
+          ) +
+        0.05
+    );
+  }
+
+  if (type === 'concert') {
+    const shimmer =
+      audio.createOscillator();
+
+    const shimmerGain =
+      audio.createGain();
+
+    shimmer.type = 'sine';
+
+    shimmer.frequency.setValueAtTime(
+      Math.min(
+        16000,
+        fluteFreq * 3.01
+      ),
+      time
+    );
+
+    envelope(
+      shimmerGain,
+      finalLevel * 0.055,
+      time,
+      0.004,
+      len * 0.32
+    );
+
+    shimmer.connect(
+      shimmerGain
+    );
+
+    shimmerGain.connect(
+      out
+    );
+
+    shimmer.start(time);
+
+    shimmer.stop(
+      time +
+        len * 0.32 +
+        0.04
+    );
+  }
+
+  if (type === 'air') {
+    const air =
+      audio.createOscillator();
+
+    const airGain =
+      audio.createGain();
+
+    const airFilter =
+      audio.createBiquadFilter();
+
+    air.type = 'sine';
+
+    air.frequency.setValueAtTime(
+      fluteFreq *
+        1.005,
+      time
+    );
+
+    air.detune.setValueAtTime(
+      -7,
+      time
+    );
+
+    airFilter.type =
+      'lowpass';
+
+    airFilter.frequency.setValueAtTime(
+      Math.min(
+        9000,
+        fluteFreq * 6
+      ),
+      time
+    );
+
+    envelope(
+      airGain,
+      finalLevel * 0.18,
+      time,
+      0.08,
+      len * 0.9
+    );
+
+    air.connect(
+      airFilter
+    );
+
+    airFilter.connect(
+      airGain
+    );
+
+    airGain.connect(
+      out
+    );
+
+    air.start(time);
+
+    air.stop(
+      time +
+        len * 0.9 +
+        0.08
+    );
+  }
+
+  return;
+}
 
   // 11. PAD
   if (inst.voice === 'pad') {
-    const osc1 = audio.createOscillator();
-    const osc2 = audio.createOscillator();
-    const filter = audio.createBiquadFilter();
-    const gain = audio.createGain();
+  const type = preset.type || 'juno';
 
-    osc1.type = waveType;
-    osc2.type = 'sawtooth';
+  const osc1 = audio.createOscillator();
+  const osc2 = audio.createOscillator();
+  const osc3 = audio.createOscillator();
 
-    const detune = preset.detune || (2 + wx * 15);
-    osc1.frequency.setValueAtTime(freq, time);
-    osc2.frequency.setValueAtTime(freq * Math.pow(2, detune / 1200), time);
+  const filter = audio.createBiquadFilter();
+  const gain = audio.createGain();
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(cutoffFreq, time);
-    if (preset.resonance) filter.Q.setValueAtTime(preset.resonance, time);
+  const osc2Gain = audio.createGain();
+  const osc3Gain = audio.createGain();
 
-    envelope(gain, finalLevel * 0.6, time, preset.attack || 0.1, len * 1.3);
+  const padFreq = Math.max(25, freq);
 
-    osc1.connect(filter); osc2.connect(filter);
-    filter.connect(gain);
-    gain.connect(out);
+  const detune1 = preset.detune ?? (4 + wx * 10);
+  const detune2 = preset.detune2 ?? (9 + wx * 18);
 
-    osc1.start(time); osc2.start(time);
-    osc1.stop(time + len + 0.3); osc2.stop(time + len + 0.3);
-    return;
+  osc1.type =
+    type === 'glass'
+      ? 'triangle'
+      : type === 'tape'
+      ? 'triangle'
+      : type === 'poly'
+      ? 'sawtooth'
+      : waveType;
+
+  osc2.type =
+    type === 'glass'
+      ? 'sine'
+      : type === 'tape'
+      ? 'triangle'
+      : 'sawtooth';
+
+  osc3.type =
+    type === 'glass'
+      ? 'sine'
+      : type === 'tape'
+      ? 'sine'
+      : 'triangle';
+
+  osc1.frequency.setValueAtTime(padFreq, time);
+  osc2.frequency.setValueAtTime(padFreq, time);
+  osc3.frequency.setValueAtTime(padFreq * 2, time);
+
+  osc1.detune.setValueAtTime(-detune1, time);
+  osc2.detune.setValueAtTime(detune1, time);
+  osc3.detune.setValueAtTime(detune2, time);
+
+  osc2Gain.gain.value =
+    type === 'glass'
+      ? 0.32
+      : type === 'tape'
+      ? 0.42
+      : type === 'poly'
+      ? 0.58
+      : 0.52;
+
+  osc3Gain.gain.value =
+    type === 'glass'
+      ? 0.24
+      : type === 'tape'
+      ? 0.16
+      : type === 'poly'
+      ? 0.22
+      : 0.28;
+
+  filter.type = 'lowpass';
+
+  const baseCutoff =
+    preset.cutoff ??
+    (type === 'glass'
+      ? 6500
+      : 2200 + wy * 3000);
+
+  const filterStart =
+    type === 'tape'
+      ? Math.max(500, baseCutoff * 0.28)
+      : type === 'glass'
+      ? Math.max(1200, baseCutoff * 0.5)
+      : Math.max(350, baseCutoff * 0.45);
+
+  filter.frequency.setValueAtTime(
+    filterStart,
+    time
+  );
+
+  filter.frequency.exponentialRampToValueAtTime(
+    Math.min(15000, baseCutoff),
+    time + (preset.filterAttack ?? preset.attack ?? 0.5)
+  );
+
+  filter.Q.setValueAtTime(
+    preset.resonance ?? 2,
+    time
+  );
+
+  const attack =
+    preset.attack ??
+    (type === 'glass'
+      ? 0.8
+      : type === 'tape'
+      ? 1.0
+      : 0.3);
+
+  const release =
+    preset.release ??
+    (type === 'glass'
+      ? 3
+      : type === 'tape'
+      ? 2.4
+      : 1.4);
+
+  const sustainLen =
+    Math.max(0.2, len) * release;
+
+  const padLevel =
+    finalLevel *
+    (preset.level ?? 0.3);
+
+  gain.gain.setValueAtTime(
+    0.0001,
+    time
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    Math.max(0.0001, padLevel),
+    time + attack
+  );
+
+  gain.gain.setValueAtTime(
+    Math.max(0.0001, padLevel),
+    time + attack + Math.max(0.01, len)
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.0001,
+    time + attack + Math.max(0.01, len) + sustainLen
+  );
+
+  if (type === 'tape') {
+    const drift = audio.createOscillator();
+    const driftGain = audio.createGain();
+
+    drift.type = 'sine';
+    drift.frequency.setValueAtTime(
+      0.18 + wx * 0.22,
+      time
+    );
+
+    driftGain.gain.setValueAtTime(
+      2 + wy * 7,
+      time
+    );
+
+    drift.connect(driftGain);
+    driftGain.connect(osc1.detune);
+    driftGain.connect(osc2.detune);
+
+    drift.start(time);
+    drift.stop(
+      time + attack + Math.max(0.01, len) + sustainLen
+    );
   }
+
+  if (type === 'poly') {
+    const shimmer = audio.createOscillator();
+    const shimmerGain = audio.createGain();
+
+    shimmer.type = 'sine';
+
+    shimmer.frequency.setValueAtTime(
+      padFreq * 2,
+      time
+    );
+
+    shimmerGain.gain.setValueAtTime(
+      0,
+      time
+    );
+
+    shimmerGain.gain.linearRampToValueAtTime(
+      padLevel * 0.12,
+      time + attack + 0.08
+    );
+
+    shimmerGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      time + attack + Math.max(0.01, len) + 0.5
+    );
+
+    shimmer.connect(shimmerGain);
+    shimmerGain.connect(out);
+
+    shimmer.start(time);
+    shimmer.stop(
+      time + attack + Math.max(0.01, len) + 0.55
+    );
+  }
+
+  if (type === 'glass') {
+    const air = audio.createBufferSource();
+    const airFilter = audio.createBiquadFilter();
+    const airGain = audio.createGain();
+
+    const noiseAmt =
+      preset.noiseAmt ?? 0.02;
+
+    air.buffer = noise(
+      Math.max(
+        0.2,
+        len + sustainLen
+      )
+    );
+
+    airFilter.type = 'highpass';
+    airFilter.frequency.setValueAtTime(
+      4200 + wy * 2500,
+      time
+    );
+
+    airFilter.Q.setValueAtTime(
+      0.7,
+      time
+    );
+
+    airGain.gain.setValueAtTime(
+      0.0001,
+      time
+    );
+
+    airGain.gain.exponentialRampToValueAtTime(
+      Math.max(0.0001, finalLevel * noiseAmt),
+      time + attack
+    );
+
+    airGain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      time + attack + Math.max(0.01, len) + 1.2
+    );
+
+    air.connect(airFilter);
+    airFilter.connect(airGain);
+    airGain.connect(out);
+
+    air.start(time);
+    air.stop(
+      time + attack + Math.max(0.01, len) + 1.25
+    );
+  }
+
+  osc1.connect(filter);
+  osc2.connect(osc2Gain);
+  osc3.connect(osc3Gain);
+
+  osc2Gain.connect(filter);
+  osc3Gain.connect(filter);
+
+  filter.connect(gain);
+  gain.connect(out);
+
+  const stopTime =
+    time +
+    attack +
+    Math.max(0.01, len) +
+    sustainLen +
+    0.08;
+
+  osc1.start(time);
+  osc2.start(time);
+  osc3.start(time);
+
+  osc1.stop(stopTime);
+  osc2.stop(stopTime);
+  osc3.stop(stopTime);
+
+  return;
+}
 }
 
 function playCurrentInstrumentSound(forcePlay = true) {
@@ -1441,11 +4256,14 @@ function scheduleStep(step, time) {
   }
 
   requestAnimationFrame(() => {
-    document.querySelectorAll(`[data-step="${step}"]`).forEach(cell => {
-      cell.classList.add('playing');
-      setTimeout(() => cell.classList.remove('playing'), 90);
-    });
+  document.querySelectorAll('.playing').forEach(cell => {
+    cell.classList.remove('playing');
   });
+
+  document.querySelectorAll(`[data-step="${step}"]`).forEach(cell => {
+    cell.classList.add('playing');
+  });
+});
 }
 
 function togglePlay() {
@@ -2454,7 +5272,10 @@ function handleSoloClick(id, isMulti) {
 function renderMainRows() {
   const container = document.getElementById('instrumentsList');
   if (!container) return;
+
   container.innerHTML = '';
+
+  container.style.position = 'relative';
 
   INSTRUMENTS.forEach(inst => {
     const instData = data[inst.id] || { grid: {}, solo: false, mute: false };
@@ -2488,7 +5309,7 @@ function renderMainRows() {
           </span>
         </span>
         <span class="pattern">
-          ${states.map(value => `<i class="${value ? 'active' : ''} ${value === 2 ? 'linked' : ''}"></i>`).join('')}
+          ${states.map((value, step) => `<i data-step="${step}" class="${value ? 'active' : ''} ${value === 2 ? 'linked' : ''}"></i>`).join('')}
         </span>
       </button>
       <button class="btn-track btn-mute ${isMute ? 'active' : ''}" title="Mute [${inst.key || ''}]">M</button>
@@ -2593,9 +5414,9 @@ function renderMainRows() {
     container.appendChild(wrapper);
   });
 
-  if (typeof setupHomeFooterHelpText === 'function') {
-    setupHomeFooterHelpText();
-  }
+if (typeof setupHomeFooterHelpText === 'function') {
+  setupHomeFooterHelpText();
+}
 }
 
 function setupHomeFooterHelpText() {
