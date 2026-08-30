@@ -341,15 +341,8 @@ canvas {
   flex: 1;
   min-width: 0;
 
-  /* 8 steps blancs / 8 steps verts */
+  /* Couleurs : 8 steps blancs / 8 steps verts */
   background:
-    repeating-linear-gradient(
-      to right,
-      transparent 0,
-      transparent calc(100% / 64 - 1px),
-      rgba(100, 116, 139, 0.12) calc(100% / 64 - 1px),
-      rgba(100, 116, 139, 0.12) calc(100% / 64)
-    ),
     repeating-linear-gradient(
       to right,
       #ffffff 0,
@@ -360,11 +353,18 @@ canvas {
 }
 
 .step-cell {
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
-  border-right: 0;
+  height: 24px;
+
+  /* Traits verticaux */
+  border-right: 1px solid rgba(100, 116, 139, 0.12);
+
+  /* Pas de modification des couleurs */
   background: transparent;
+
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 /* Couleur des notes : INCHANGÉE */
